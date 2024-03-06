@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
 import { environment } from '@env/advanced-auth/environment.development';
-import { GMAIL_AUTH_SCOPE, GOOGLE_API } from '@core/advanced-auth/constants';
+import { SCOPE_GMAIL_AUTH, GOOGLE_API } from '@core/advanced-auth/constants';
 
 import {
   IGoogleUserInfo,
@@ -25,7 +25,7 @@ export class AuthService {
       strictDiscoveryDocumentValidation: false,
       clientId: environment.googleClientId,
       redirectUri: window.location.origin + '/home',
-      scope: `openid profile email ${GMAIL_AUTH_SCOPE}`,
+      scope: `openid profile email ${SCOPE_GMAIL_AUTH}`,
     };
 
     this._oAuthService.configure(config);

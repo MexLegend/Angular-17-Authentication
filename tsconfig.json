@@ -14,14 +14,23 @@
       "@shared/advanced-auth/*": [
         "projects/advanced-oauth2-oidc-open-id/src/app/shared/*"
       ],
-      "@env/google-gapi/*": [
-        "projects/google-gapi/src/environments/*"
+      "@env/google-gsi-client/*": [
+        "projects/google-gsi-client/src/environments/*"
       ],
-      "@core/google-gapi/*": [
-        "projects/google-gapi/src/app/core/*"
+      "@core/google-gsi-client/*": [
+        "projects/google-gsi-client/src/app/core/*"
       ],
-      "@shared/google-gapi/*": [
-        "projects/google-gapi/src/app/shared/*"
+      "@shared/google-gsi-client/*": [
+        "projects/google-gsi-client/src/app/shared/*"
+      ],
+      "@env/google-auth2-gapi/*": [
+        "projects/google-auth2-gapi/src/environments/*"
+      ],
+      "@core/google-auth2-gapi/*": [
+        "projects/google-auth2-gapi/src/app/core/*"
+      ],
+      "@shared/google-auth2-gapi/*": [
+        "projects/google-auth2-gapi/src/app/shared/*"
       ]
     },
     "forceConsistentCasingInFileNames": true,

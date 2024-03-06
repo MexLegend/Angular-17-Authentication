@@ -1,0 +1,40 @@
+<div class="flex flex-col w-full gap-6 justify-center items-center">
+  <div
+    class="flex items-center justify-center relative w-full before:absolute before:w-full before:h-1 before:border-b before:inset-0 before:my-auto"
+  >
+    <small class="block w-max z-10 px-6 bg-white font-medium">
+      Or continue with
+    </small>
+  </div>
+  <div class="flex gap-4 w-full">
+    <div id="gbtn" class="hidden"></div>
+    <div
+      class="flex flex-1 items-center justify-center"
+      [ngClass]="{ 'cursor-not-allowed': $isLoading() }"
+    >
+      <button
+        type="button"
+        class="flex flex-1 gap-2 items-center justify-center rounded-xl transition-all hover:bg-slate-100 active:scale-95 border border-slate-300 py-3 disabled:pointer-events-none disabled:opacity-70"
+        (click)="authenticateByGoogle()"
+        [disabled]="$isLoading()"
+      >
+        <app-google-icon />
+        <p class="text-sm font-medium">Google</p>
+      </button>
+    </div>
+    <div
+      class="flex flex-1 items-center justify-center"
+      [ngClass]="{ 'cursor-not-allowed': $isLoading() }"
+    >
+      <button
+        type="button"
+        class="flex flex-1 gap-2 items-center justify-center rounded-xl transition-all hover:bg-slate-100 active:scale-95 border border-slate-300 py-3 disabled:pointer-events-none disabled:opacity-70"
+        (click)="authenticateByFacebook()"
+        [disabled]="$isLoading()"
+      >
+        <app-facebook-blue-icon />
+        <p class="text-sm font-medium">Facebook</p>
+      </button>
+    </div>
+  </div>
+</div>
