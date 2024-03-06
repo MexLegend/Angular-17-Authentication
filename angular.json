@@ -3,5 +3,287 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
+    "basic-oauth2-oidc": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/basic-oauth2-oidc",
+      "sourceRoot": "projects/basic-oauth2-oidc/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/basic-oauth2-oidc",
+            "index": "projects/basic-oauth2-oidc/src/index.html",
+            "browser": "projects/basic-oauth2-oidc/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "projects/basic-oauth2-oidc/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "projects/basic-oauth2-oidc/src/favicon.ico",
+              "projects/basic-oauth2-oidc/src/assets"
+            ],
+            "styles": [
+              "projects/basic-oauth2-oidc/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "basic-oauth2-oidc:build:production"
+            },
+            "development": {
+              "buildTarget": "basic-oauth2-oidc:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "buildTarget": "basic-oauth2-oidc:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "projects/basic-oauth2-oidc/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "projects/basic-oauth2-oidc/src/favicon.ico",
+              "projects/basic-oauth2-oidc/src/assets"
+            ],
+            "styles": [
+              "projects/basic-oauth2-oidc/src/styles.scss"
+            ],
+            "scripts": []
+          }
+        }
+      }
+    },
+    "advanced-oauth2-oidc-openId": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/advanced-oauth2-oidc-open-id",
+      "sourceRoot": "projects/advanced-oauth2-oidc-open-id/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/advanced-oauth2-oidc-open-id",
+            "index": "projects/advanced-oauth2-oidc-open-id/src/index.html",
+            "browser": "projects/advanced-oauth2-oidc-open-id/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "projects/advanced-oauth2-oidc-open-id/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "projects/advanced-oauth2-oidc-open-id/src/favicon.ico",
+              "projects/advanced-oauth2-oidc-open-id/src/assets"
+            ],
+            "styles": [
+              "projects/advanced-oauth2-oidc-open-id/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "advanced-oauth2-oidc-openId:build:production"
+            },
+            "development": {
+              "buildTarget": "advanced-oauth2-oidc-openId:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "buildTarget": "advanced-oauth2-oidc-openId:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "projects/advanced-oauth2-oidc-open-id/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "projects/advanced-oauth2-oidc-open-id/src/favicon.ico",
+              "projects/advanced-oauth2-oidc-open-id/src/assets"
+            ],
+            "styles": [
+              "projects/advanced-oauth2-oidc-open-id/src/styles.scss"
+            ],
+            "scripts": []
+          }
+        }
+      }
+    },
+    "google-gapi": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/google-gapi",
+      "sourceRoot": "projects/google-gapi/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/google-gapi",
+            "index": "projects/google-gapi/src/index.html",
+            "browser": "projects/google-gapi/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "projects/google-gapi/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "projects/google-gapi/src/favicon.ico",
+              "projects/google-gapi/src/assets"
+            ],
+            "styles": [
+              "projects/google-gapi/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "google-gapi:build:production"
+            },
+            "development": {
+              "buildTarget": "google-gapi:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "buildTarget": "google-gapi:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "projects/google-gapi/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "projects/google-gapi/src/favicon.ico",
+              "projects/google-gapi/src/assets"
+            ],
+            "styles": [
+              "projects/google-gapi/src/styles.scss"
+            ],
+            "scripts": []
+          }
+        }
+      }
+    }
   }
 }

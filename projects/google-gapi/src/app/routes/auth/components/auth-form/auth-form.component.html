@@ -1,0 +1,26 @@
+@if (formGroup) {
+<fieldset
+  class="flex flex-col gap-6 w-full items-center justify-center"
+  [formGroup]="formGroup"
+>
+  <section class="flex w-full flex-col gap-3">
+    <label for="login-email" class="text-sm font-medium">Email address</label>
+    <input
+      id="login-email"
+      type="email"
+      formControlName="email"
+      class="border p-2 border-slate-300 focus:border-primary active:border-primary focus:outline-primary active:outline-primary rounded-lg"
+    />
+  </section>
+  <section class="flex w-full flex-col gap-3">
+    <label for="login-password" class="text-sm font-medium">Password</label>
+    <input
+      id="login-password"
+      type="text"
+      formControlName="password"
+      class="border p-2 border-slate-300 focus:border-primary active:border-primary focus:outline-primary active:outline-primary rounded-lg"
+    />
+  </section>
+</fieldset>
+
+}

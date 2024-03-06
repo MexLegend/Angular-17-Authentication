@@ -1,0 +1,7 @@
+.form-field-error {
+  @apply static px-4 leading-5 tracking-wide text-left -m-[10px];
+
+  .error-message {
+    @apply text-rose-500 text-xs;
+  }
+}

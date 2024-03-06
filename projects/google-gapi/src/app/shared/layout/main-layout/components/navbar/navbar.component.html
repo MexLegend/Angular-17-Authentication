@@ -1,0 +1,20 @@
+<nav
+  #navbar
+  class="z-50 fixed flex w-full h-20 border-b border-b-transparent transition-all duration-200 bg-slate-100 border-b-slate-200"
+  [ngClass]="{
+    'bg-white/80 backdrop-blur-sm': isScrolling()
+  }"
+>
+  <div class="flex justify-between items-center container mx-auto">
+    <h1 class="text-2xl font-bold">OAuth2 - OpenId Authentication</h1>
+    <div class="flex gap-1">
+      @if (userData()) {
+      <app-button class="ml-2" label="LogOut" (click)="signOut()" />
+      } @else {
+      <app-button class="ml-2" label="Login" routerLink="auth">
+        <app-logout-icon [size]="22" />
+      </app-button>
+      }
+    </div>
+  </div>
+</nav>

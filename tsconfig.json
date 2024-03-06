@@ -3,6 +3,27 @@
   "compileOnSave": false,
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
+    "baseUrl": "./",
+    "paths": {
+      "@env/advanced-auth/*": [
+        "projects/advanced-oauth2-oidc-open-id/src/environments/*"
+      ],
+      "@core/advanced-auth/*": [
+        "projects/advanced-oauth2-oidc-open-id/src/app/core/*"
+      ],
+      "@shared/advanced-auth/*": [
+        "projects/advanced-oauth2-oidc-open-id/src/app/shared/*"
+      ],
+      "@env/google-gapi/*": [
+        "projects/google-gapi/src/environments/*"
+      ],
+      "@core/google-gapi/*": [
+        "projects/google-gapi/src/app/core/*"
+      ],
+      "@shared/google-gapi/*": [
+        "projects/google-gapi/src/app/shared/*"
+      ]
+    },
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitOverride": true,
@@ -19,10 +40,7 @@
     "target": "ES2022",
     "module": "ES2022",
     "useDefineForClassFields": false,
-    "lib": [
-      "ES2022",
-      "dom"
-    ]
+    "lib": ["ES2022", "dom"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
