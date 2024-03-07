@@ -20,5 +20,5 @@ export class HomePageComponent {
   readonly $userData: Signal<IUser | null> = this._userService.getUserData();
   readonly $emailsList: Signal<IGmailMailDetails[]> =
     this._gmailService.getEmails(this.$userData()!.id!);
-  readonly $isLoading: Signal<boolean> = this._gmailService.getIsLoading();
+  readonly $isLoading: Signal<boolean> = this._gmailService.isLoading();
 }

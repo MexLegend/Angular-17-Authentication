@@ -19,7 +19,7 @@ export class AuthService {
   private readonly _oAuthService = inject(OAuthService);
   private readonly _userService = inject(UserService);
 
-  initGoogleAuthConfig() {
+  configureGoogleAuthentication() {
     const config: AuthConfig = {
       issuer: GOOGLE_API,
       strictDiscoveryDocumentValidation: false,

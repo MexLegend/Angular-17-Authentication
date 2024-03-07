@@ -7,7 +7,7 @@ import { provideOAuthClient } from 'angular-oauth2-oidc';
 import { AuthService } from './core/services/common/auth.service';
 
 const initGoogleConfig = (authService: AuthService) => {
-  return () => authService.initGoogleAuthConfig();
+  return () => authService.configureGoogleAuthentication();
 };
 
 export const appConfig: ApplicationConfig = {

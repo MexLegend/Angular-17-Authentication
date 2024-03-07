@@ -2,9 +2,11 @@ import { NgClass } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   Input,
   OnInit,
   Signal,
+  ViewChild,
   inject,
 } from '@angular/core';
 import { AuthService } from '@core/google-gsi-client/services/common/auth.service';
@@ -22,13 +24,20 @@ import { FacebookBlueIconComponent } from '@shared/google-gsi-client/icons/faceb
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SocialAuthActionsComponent implements OnInit {
+  @ViewChild('gbtn') googleButtonRef!: ElementRef<HTMLDivElement>;
+
   @Input() authAction: AuthActionType = 'LOGIN';
 
   private readonly _authService = inject(AuthService);
-  readonly $isLoading: Signal<boolean> = this._authService.getIsLoading();
+  readonly $isLoading: Signal<boolean> = this._authService.isLoading();
 
   ngOnInit(): void {
-    this._authService.initGoogleAuthConfig(this.authAction);
+    this._authService.setGoogleAuthenticationAction(this.authAction);
+  }
+
+  ngAfterViewInit(): void {
+    const googleButton = this.googleButtonRef.nativeElement;
+    this._authService.renderGoogleAuthButton(googleButton);
   }
 
   authenticateByGoogle() {

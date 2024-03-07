@@ -15,7 +15,7 @@ import { UserService } from './user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AUTH_REDIRECT } from '@core/google-gsi-client/constants';
 import { environment } from '@env/google-gsi-client/environment';
-import { Observable, Subject, delay, of, throwError } from 'rxjs';
+import { Observable, delay, of } from 'rxjs';
 import { KEY_STORAGE } from '@core/google-gsi-client/constants';
 import { LocalStorageService } from '@core/google-gsi-client/services/utils/local-storage.service';
 import { IAuthError } from '@core/google-gsi-client/models/error.interface';
@@ -37,27 +37,24 @@ export class AuthService extends BaseApiService {
   private readonly _$isLoading: WritableSignal<boolean> = signal(false);
   private readonly _$authError: WritableSignal<IAuthError | null> =
     signal(null);
-  private readonly _googleAuthSubject: Subject<IUser> = new Subject();
+  private readonly _$googleAuthAction: WritableSignal<AuthActionType> =
+    signal('LOGIN');
   private readonly _$googleButtonWrapper: WritableSignal<HTMLButtonElement | null> =
     signal(null);
 
   constructor() {
     super('auth');
+    this._configureGoogleAuthentication();
   }
 
-  initGoogleAuthConfig(authAction: AuthActionType): void {
-    this._initializeGoogleSignIn(authAction);
-    this._renderGoogleSignInButton();
-  }
-
-  private _initializeGoogleSignIn(authAction: AuthActionType): void {
+  private _configureGoogleAuthentication(): void {
     google.accounts.id.initialize({
       client_id: environment.GOOGLE_CLIENT_ID,
       callback: ({ credential: token }) => {
         this._ngZone.run(() => {
           let authObservable: Observable<IUser>;
 
-          if (authAction === 'LOGIN') {
+          if (this._$googleAuthAction() === 'LOGIN') {
             authObservable = this._googleSignIn(token);
           } else {
             authObservable = this._googleSignUp(token);
@@ -78,13 +75,14 @@ export class AuthService extends BaseApiService {
     });
   }
 
-  private _renderGoogleSignInButton() {
-    const googleSignInWrapper = document.getElementById('gbtn') as HTMLElement;
-    const googleButton = document.getElementById('gbtn') as HTMLElement;
+  setGoogleAuthenticationAction(authAction: AuthActionType) {
+    this._$googleAuthAction.set(authAction);
+  }
 
+  renderGoogleAuthButton(googleButton: HTMLDivElement) {
     google.accounts.id.renderButton(googleButton, { type: 'icon' });
 
-    const googleSignInButton = googleSignInWrapper.querySelector(
+    const googleSignInButton = googleButton.querySelector(
       'div[role=button]'
     ) as HTMLButtonElement;
 
@@ -108,7 +106,7 @@ export class AuthService extends BaseApiService {
     return this._$isLoggedIn();
   }
 
-  getIsLoading(): Signal<boolean> {
+  isLoading(): Signal<boolean> {
     return this._$isLoading.asReadonly();
   }
 

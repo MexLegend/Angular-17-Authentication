@@ -45,7 +45,7 @@ export class AuthService extends BaseApiService {
     super('auth');
   }
 
-  initGoogleAuthConfig(): void {
+  configureGoogleAuthentication(): void {
     gapi.load(KEY_GAPI_LOAD.AUTH2, () => {
       console.log("Hey");
       
@@ -74,7 +74,7 @@ export class AuthService extends BaseApiService {
     return this._$isLoggedIn();
   }
 
-  getIsLoading(): Signal<boolean> {
+  isLoading(): Signal<boolean> {
     return this._$isLoading.asReadonly();
   }
 

@@ -11,6 +11,10 @@
         <p>{{ $userData()?.id }}</p>
       </div>
       <div class="flex gap-2 items-center">
+        <h2 class="font-semibold text-lg">Google ID</h2>
+        <p>{{ $userData()?.googleUserId }}</p>
+      </div>
+      <div class="flex gap-2 items-center">
         <h2 class="font-semibold text-lg">Email</h2>
         <p>{{ $userData()?.email }}</p>
       </div>
@@ -19,5 +23,25 @@
         <p>{{ $userData()?.name }}</p>
       </div>
     </div>
+  </article>
+  <article
+    class="flex gap-3 rounded-2xl shadow-lg p-6 border items-center w-max min-h-full flex-1"
+  >
+    <button (click)="getEmails()">Get Emails</button>
+    <ul class="flex flex-1 flex-col gap-2">
+      @if ($isLoading()) {
+      <div class="size-16 flex items-center justify-center mx-auto">
+        <app-loading-icon class="animate-spin" [size]="40" />
+      </div>
+      } @else { 
+        @for (email of $emailsList(); track email.threadId) {
+        <li class="flex flex-col gap-1 border bg-slate-200 rounded-lg p-2">
+          <button class="flex gap-2 items-center text-left">
+            <p class="line-clamp-2">{{ email.snippet }}</p>
+          </button>
+        </li>
+        } 
+      }
+    </ul>
   </article>
 </section>

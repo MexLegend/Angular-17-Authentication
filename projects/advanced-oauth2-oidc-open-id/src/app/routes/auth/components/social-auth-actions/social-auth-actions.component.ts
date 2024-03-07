@@ -27,7 +27,7 @@ export class SocialAuthActionsComponent implements OnInit {
   private readonly _authService = inject(AuthService);
 
   ngOnInit(): void {
-    this._authService.initGoogleAuthConfig();
+    this._authService.configureGoogleAuthentication();
   }
 
   authenticateByGoogle() {

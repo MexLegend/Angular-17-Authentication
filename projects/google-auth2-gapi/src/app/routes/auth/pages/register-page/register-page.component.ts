@@ -38,7 +38,7 @@ import { FormSubmitDirective } from '@core/google-auth2-gapi/directives';
 export class RegisterPageComponent implements OnDestroy {
   private readonly _fb = inject(NonNullableFormBuilder);
   private readonly _authService = inject(AuthService);
-  readonly $isLoading = this._authService.getIsLoading();
+  readonly $isLoading = this._authService.isLoading();
 
   form!: FormGroup<IRegisterForm>;
   formError?: IAuthError;

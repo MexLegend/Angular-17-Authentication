@@ -29,10 +29,10 @@ export class SocialAuthActionsComponent implements OnInit {
 
   private readonly _authService = inject(AuthService);
   private readonly _autoDestroyService = inject(AutoDestroyService);
-  readonly $isLoading: Signal<boolean> = this._authService.getIsLoading();
+  readonly $isLoading: Signal<boolean> = this._authService.isLoading();
 
   ngOnInit(): void {
-    this._authService.initGoogleAuthConfig();
+    this._authService.configureGoogleAuthentication();
   }
 
   authenticateByGoogle() {

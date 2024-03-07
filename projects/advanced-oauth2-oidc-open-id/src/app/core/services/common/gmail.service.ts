@@ -23,7 +23,7 @@ export class GmailService {
   private readonly _oAuthService = inject(OAuthService);
   private readonly _isLoading: WritableSignal<boolean> = signal(false);
 
-  getIsLoading(): Signal<boolean> {
+  isLoading(): Signal<boolean> {
     return this._isLoading.asReadonly();
   }
 

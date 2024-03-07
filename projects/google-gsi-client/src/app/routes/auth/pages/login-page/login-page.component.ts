@@ -47,7 +47,7 @@ import { AuthService } from '@core/google-gsi-client/services/common/auth.servic
 export class LoginPageComponent implements OnDestroy {
   private readonly _fb = inject(NonNullableFormBuilder);
   private readonly _authService = inject(AuthService);
-  readonly $isLoading = this._authService.getIsLoading();
+  readonly $isLoading = this._authService.isLoading();
 
   form!: FormGroup<ILoginForm>;
   formError?: IAuthError;

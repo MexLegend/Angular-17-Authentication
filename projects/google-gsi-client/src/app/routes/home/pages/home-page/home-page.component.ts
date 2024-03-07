@@ -3,6 +3,7 @@ import { UserService } from '@core/google-gsi-client/services/common/user.servic
 import { IUser } from '@core/google-gsi-client/models/user.interface';
 import { AsyncPipe, JsonPipe } from '@angular/common';
 import { LoadingIconComponent } from '@shared/google-gsi-client/icons/loading-icon.component';
+import { GmailService } from '@core/google-gsi-client/services/common/gmail.service';
 
 @Component({
   selector: 'app-home-page',
@@ -13,6 +14,13 @@ import { LoadingIconComponent } from '@shared/google-gsi-client/icons/loading-ic
 })
 export class HomePageComponent {
   private readonly _userService = inject(UserService);
+  private readonly _gmailService = inject(GmailService);
 
   readonly $userData: Signal<IUser | null> = this._userService.getUserData();
+  readonly $emailsList: Signal<any[]> = this._gmailService.getEmails();
+  readonly $isLoading: Signal<boolean> = this._gmailService.isLoading();
+
+  getEmails() {
+    this._gmailService.fetchEmails(this.$userData()?.googleUserId!);
+  }
 }
