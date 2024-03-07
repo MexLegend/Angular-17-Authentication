@@ -1,4 +1,14 @@
 import { FormControl } from '@angular/forms';
+import { WritableSignal } from '@angular/core';
+import { IAuthError } from '@core/google-gsi-client/models/error.interface';
+
+export interface IAuthState {
+  $googleAuthAction: WritableSignal<AuthActionType>;
+  $googleButtonWrapper: WritableSignal<HTMLButtonElement | null>;
+  $isLoadingAuth: WritableSignal<boolean>;
+  $authError: WritableSignal<IAuthError | null>;
+  $isLoggedIn: WritableSignal<boolean>;
+}
 
 export type AuthActionType = 'LOGIN' | 'REGISTER';
 

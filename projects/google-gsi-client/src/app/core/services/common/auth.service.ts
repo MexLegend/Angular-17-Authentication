@@ -1,11 +1,4 @@
-import {
-  Injectable,
-  NgZone,
-  Signal,
-  WritableSignal,
-  inject,
-  signal,
-} from '@angular/core';
+import { Injectable, NgZone, inject, signal } from '@angular/core';
 
 import {
   IGoogleUserInfo,
@@ -19,13 +12,31 @@ import { Observable, delay, of } from 'rxjs';
 import { KEY_STORAGE } from '@core/google-gsi-client/constants';
 import { LocalStorageService } from '@core/google-gsi-client/services/utils/local-storage.service';
 import { IAuthError } from '@core/google-gsi-client/models/error.interface';
-import { AuthActionType } from '@core/google-gsi-client/models/auth.interface';
+import {
+  AuthActionType,
+  IAuthState,
+} from '@core/google-gsi-client/models/auth.interface';
 import { BaseApiService } from '@core/google-gsi-client/models/base-api-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService extends BaseApiService {
+  private readonly _authState: IAuthState = {
+    $googleAuthAction: signal<AuthActionType>('LOGIN'),
+    $googleButtonWrapper: signal<HTMLButtonElement | null>(null),
+    $isLoadingAuth: signal<boolean>(false),
+    $authError: signal<IAuthError | null>(null),
+    $isLoggedIn: signal<boolean>(false),
+  } as const;
+
+  readonly $googleAuthAction = this._authState.$googleAuthAction.asReadonly();
+  private readonly $googleButtonWrapper =
+    this._authState.$googleButtonWrapper.asReadonly();
+  readonly $isLoadingAuth = this._authState.$isLoadingAuth.asReadonly();
+  readonly $authError = this._authState.$authError.asReadonly();
+  readonly $isLoggedIn = this._authState.$isLoggedIn.asReadonly();
+
   private readonly _router = inject(Router);
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _ngZone = inject(NgZone);
@@ -33,18 +44,29 @@ export class AuthService extends BaseApiService {
   private readonly _storageService = inject(LocalStorageService);
   private readonly _userService = inject(UserService);
 
-  private readonly _$isLoggedIn: WritableSignal<boolean> = signal(false);
-  private readonly _$isLoading: WritableSignal<boolean> = signal(false);
-  private readonly _$authError: WritableSignal<IAuthError | null> =
-    signal(null);
-  private readonly _$googleAuthAction: WritableSignal<AuthActionType> =
-    signal('LOGIN');
-  private readonly _$googleButtonWrapper: WritableSignal<HTMLButtonElement | null> =
-    signal(null);
-
   constructor() {
     super('auth');
     this._configureGoogleAuthentication();
+  }
+
+  private _setGoogleAuthAction(authAction: AuthActionType): void {
+    this._authState.$googleAuthAction.set(authAction);
+  }
+
+  private _setGoogleButtonWrapper(buttonWrapper: HTMLButtonElement): void {
+    this._authState.$googleButtonWrapper.set(buttonWrapper);
+  }
+
+  setIsLoading(isLoading: boolean): void {
+    this._authState.$isLoadingAuth.set(isLoading);
+  }
+
+  setAuthError(error: IAuthError | null): void {
+    this._authState.$authError.set(error);
+  }
+
+  private _setIsLoggedIn(isLoggedIn: boolean): void {
+    this._authState.$isLoggedIn.set(isLoggedIn);
   }
 
   private _configureGoogleAuthentication(): void {
@@ -54,7 +76,7 @@ export class AuthService extends BaseApiService {
         this._ngZone.run(() => {
           let authObservable: Observable<IUser>;
 
-          if (this._$googleAuthAction() === 'LOGIN') {
+          if (this.$googleAuthAction() === 'LOGIN') {
             authObservable = this._googleSignIn(token);
           } else {
             authObservable = this._googleSignUp(token);
@@ -65,10 +87,10 @@ export class AuthService extends BaseApiService {
               this.authenticateUser(user);
             },
             error: (error) => {
-              this._$authError.set(error);
-              this._$isLoading.set(false);
+              this.setAuthError(error);
+              this.setIsLoading(false);
             },
-            complete: () => this._$isLoading.set(false),
+            complete: () => this.setIsLoading(false),
           });
         });
       },
@@ -76,7 +98,7 @@ export class AuthService extends BaseApiService {
   }
 
   setGoogleAuthenticationAction(authAction: AuthActionType) {
-    this._$googleAuthAction.set(authAction);
+    this._setGoogleAuthAction(authAction);
   }
 
   renderGoogleAuthButton(googleButton: HTMLDivElement) {
@@ -86,7 +108,7 @@ export class AuthService extends BaseApiService {
       'div[role=button]'
     ) as HTMLButtonElement;
 
-    this._$googleButtonWrapper.set(googleSignInButton);
+    this._setGoogleButtonWrapper(googleSignInButton);
   }
 
   loadUserFromStorage(): IUser | null {
@@ -96,30 +118,10 @@ export class AuthService extends BaseApiService {
 
     if (userFromStorage) {
       this._userService.setUserData(userFromStorage);
-      this._$isLoggedIn.set(true);
+      this._setIsLoggedIn(true);
     }
 
     return userFromStorage;
-  }
-
-  isLoggedIn(): boolean {
-    return this._$isLoggedIn();
-  }
-
-  isLoading(): Signal<boolean> {
-    return this._$isLoading.asReadonly();
-  }
-
-  stopIsLoading(): void {
-    return this._$isLoading.set(false);
-  }
-
-  getAuthError(): Signal<IAuthError | null> {
-    return this._$authError.asReadonly();
-  }
-
-  setAuthError(authError: IAuthError | null): void {
-    return this._$authError.set(authError);
   }
 
   authenticateUser(userData: IUser): void {
@@ -128,17 +130,17 @@ export class AuthService extends BaseApiService {
 
     this._userService.setUserData(userData);
     this._storageService.setItem(KEY_STORAGE.DATA_USER, userData);
-    this._$isLoggedIn.set(true);
+    this._setIsLoggedIn(true);
     this._router.navigateByUrl(redirectUrl || '/');
   }
 
   authenticateByGoogle(): void {
-    this._$authError.set(null);
-    this._$googleButtonWrapper()?.click();
+    this.setAuthError(null);
+    this.$googleButtonWrapper()?.click();
   }
 
   private _googleSignIn(token: string): Observable<IUser> {
-    this._$isLoading.set(true);
+    this.setIsLoading(true);
     console.log('Google Login: ', token);
 
     const userInfo: IGoogleUserInfo = JSON.parse(atob(token.split('.')[1]));
@@ -157,7 +159,7 @@ export class AuthService extends BaseApiService {
   }
 
   private _googleSignUp(token: string): Observable<IUser> {
-    this._$isLoading.set(true);
+    this.setIsLoading(true);
     console.log('Google Register: ', token);
 
     const userInfo: IGoogleUserInfo = JSON.parse(atob(token.split('.')[1]));
@@ -180,7 +182,7 @@ export class AuthService extends BaseApiService {
       // Logout from Google
       google.accounts.id.disableAutoSelect();
 
-      this._$isLoggedIn.set(false);
+      this._setIsLoggedIn(false);
       this._router.navigateByUrl('/auth').then(() => {
         this._storageService.removeItem(KEY_STORAGE.DATA_USER);
         this._userService.setUserData(null);

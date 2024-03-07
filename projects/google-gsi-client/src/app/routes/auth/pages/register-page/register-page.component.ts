@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, OnDestroy, effect, inject, untracked } from '@angular/core';
+import { Component, OnDestroy, Signal, effect, inject, untracked } from '@angular/core';
 import {
   FormGroup,
   NonNullableFormBuilder,
@@ -38,7 +38,8 @@ import { FormSubmitDirective } from '@core/google-gsi-client/directives';
 export class RegisterPageComponent implements OnDestroy {
   private readonly _fb = inject(NonNullableFormBuilder);
   private readonly _authService = inject(AuthService);
-  readonly $isLoading = this._authService.isLoading();
+
+  readonly $isLoading: Signal<boolean> = this._authService.$isLoadingAuth;
 
   form!: FormGroup<IRegisterForm>;
   formError?: IAuthError;
@@ -58,7 +59,7 @@ export class RegisterPageComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._authService.stopIsLoading();
+    this._authService.setIsLoading(false);
     this._authService.setAuthError(null);
   }
 

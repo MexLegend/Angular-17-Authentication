@@ -37,7 +37,7 @@ export class NavbarComponent {
   private readonly _authService = inject(AuthService);
   private readonly _userService = inject(UserService);
 
-  readonly userData: Signal<IUser | null> = this._userService.getUserData();
+  readonly userData: Signal<IUser | null> = this._userService.$user;
   readonly isScrolling: WritableSignal<boolean> = signal(false);
 
   @HostListener('window:scroll')

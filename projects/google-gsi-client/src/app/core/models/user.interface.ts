@@ -1,3 +1,9 @@
+import { WritableSignal } from "@angular/core";
+
+export interface IUserState {
+  $user: WritableSignal<IUser | null>;
+}
+
 export interface IUser {
   id: string;
   googleUserId?: string;

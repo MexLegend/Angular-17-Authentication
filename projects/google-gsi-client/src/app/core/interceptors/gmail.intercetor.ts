@@ -9,7 +9,7 @@ export const gmailInterceptor: HttpInterceptorFn = (req, next) => {
   if (req.url.startsWith(GOOGLE_API_URL_USERS)) {
     const authReq = req.clone({
       setHeaders: {
-        Authorization: `Bearer ${gmailService.accessToken()}`,
+        Authorization: `Bearer ${gmailService.$accessToken()}`,
       },
     });
     return next(authReq);

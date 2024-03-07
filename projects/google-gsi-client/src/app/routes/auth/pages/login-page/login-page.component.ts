@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnDestroy,
+  Signal,
   effect,
   inject,
   untracked,
@@ -47,7 +48,8 @@ import { AuthService } from '@core/google-gsi-client/services/common/auth.servic
 export class LoginPageComponent implements OnDestroy {
   private readonly _fb = inject(NonNullableFormBuilder);
   private readonly _authService = inject(AuthService);
-  readonly $isLoading = this._authService.isLoading();
+
+  readonly $isLoading: Signal<boolean> = this._authService.$isLoadingAuth;
 
   form!: FormGroup<ILoginForm>;
   formError?: IAuthError;
@@ -67,7 +69,7 @@ export class LoginPageComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._authService.stopIsLoading();
+    this._authService.setIsLoading(false);
     this._authService.setAuthError(null);
   }
 

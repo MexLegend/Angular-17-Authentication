@@ -33,7 +33,7 @@ export class AuthService extends BaseApiService {
   private readonly _storageService = inject(LocalStorageService);
   private readonly _userService = inject(UserService);
 
-  private readonly _$isLoggedIn: WritableSignal<boolean> = signal(false);
+  private readonly _$selectIsLoggedIn: WritableSignal<boolean> = signal(false);
   private readonly _$isLoading: WritableSignal<boolean> = signal(false);
   private readonly _$authError: WritableSignal<IAuthError | null> =
     signal(null);
@@ -64,14 +64,14 @@ export class AuthService extends BaseApiService {
 
     if (userFromStorage) {
       this._userService.setUserData(userFromStorage);
-      this._$isLoggedIn.set(true);
+      this._$selectIsLoggedIn.set(true);
     }
 
     return userFromStorage;
   }
 
-  isLoggedIn(): boolean {
-    return this._$isLoggedIn();
+  selectIsLoggedIn(): boolean {
+    return this._$selectIsLoggedIn();
   }
 
   isLoading(): Signal<boolean> {
@@ -82,7 +82,7 @@ export class AuthService extends BaseApiService {
     return this._$isLoading.set(false);
   }
 
-  getAuthError(): Signal<IAuthError | null> {
+  selectAuthError(): Signal<IAuthError | null> {
     return this._$authError.asReadonly();
   }
 
@@ -96,7 +96,7 @@ export class AuthService extends BaseApiService {
 
     this._userService.setUserData(userData);
     this._storageService.setItem(KEY_STORAGE.DATA_USER, userData);
-    this._$isLoggedIn.set(true);
+    this._$selectIsLoggedIn.set(true);
     this._router.navigateByUrl(redirectUrl || '/');
   }
 
@@ -176,7 +176,7 @@ export class AuthService extends BaseApiService {
   }
 
   invalidateUser(observer: Subscriber<void>) {
-    this._$isLoggedIn.set(false);
+    this._$selectIsLoggedIn.set(false);
     this._router.navigateByUrl('/auth').then(() => {
       this._storageService.removeItem(KEY_STORAGE.DATA_USER);
       this._userService.setUserData(null);

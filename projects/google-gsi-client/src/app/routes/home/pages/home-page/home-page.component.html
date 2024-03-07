@@ -25,9 +25,18 @@
     </div>
   </article>
   <article
-    class="flex gap-3 rounded-2xl shadow-lg p-6 border items-center w-max min-h-full flex-1"
+    class="flex flex-col justify-center gap-3 rounded-2xl shadow-xl p-6 border items-center w-max min-h-full flex-1"
   >
-    <button (click)="getEmails()">Get Emails</button>
+    @if(!$accessToken()) {
+    <button (click)="requestAccessToken()" class="p-3 rounded-xl bg-primary text-white">
+      Request Access Token
+    </button>
+    }
+    @if ($accessToken() && !$emailsList().length) {
+    <button (click)="getEmails()" class="p-3 rounded-lg bg-primary text-white">
+      Get Emails
+    </button>
+    } 
     <ul class="flex flex-1 flex-col gap-2">
       @if ($isLoading()) {
       <div class="size-16 flex items-center justify-center mx-auto">

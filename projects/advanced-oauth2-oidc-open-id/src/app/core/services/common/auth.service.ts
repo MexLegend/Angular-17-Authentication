@@ -52,7 +52,7 @@ export class AuthService {
     return userData;
   }
 
-  isLoggedIn(): boolean {
+  selectIsLoggedIn(): boolean {
     return this._oAuthService.hasValidAccessToken();
   }
 

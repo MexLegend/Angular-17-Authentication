@@ -18,5 +18,5 @@ export class AuthFormContainerComponent {
 
   private readonly _authService = inject(AuthService);
   readonly $authError: Signal<IAuthError | null> =
-    this._authService.getAuthError();
+    this._authService.selectAuthError();
 }

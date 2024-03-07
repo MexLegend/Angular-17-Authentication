@@ -17,6 +17,5 @@ export class AuthFormContainerComponent {
   @Input() authAction: AuthActionType = 'LOGIN';
 
   private readonly _authService = inject(AuthService);
-  readonly $authError: Signal<IAuthError | null> =
-    this._authService.getAuthError();
+  readonly $authError: Signal<IAuthError | null> = this._authService.$authError;
 }

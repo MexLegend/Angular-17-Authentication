@@ -16,11 +16,16 @@ export class HomePageComponent {
   private readonly _userService = inject(UserService);
   private readonly _gmailService = inject(GmailService);
 
-  readonly $userData: Signal<IUser | null> = this._userService.getUserData();
-  readonly $emailsList: Signal<any[]> = this._gmailService.getEmails();
-  readonly $isLoading: Signal<boolean> = this._gmailService.isLoading();
+  readonly $userData: Signal<IUser | null> = this._userService.$user;
+  readonly $accessToken: Signal<string | null> = this._gmailService.$accessToken;
+  readonly $emailsList: Signal<any[]> = this._gmailService.$emailsList;
+  readonly $isLoading: Signal<boolean> = this._gmailService.$isLoadingEmails;
+
+  requestAccessToken(){
+    this._gmailService.requestAccessToken();
+  }
 
   getEmails() {
-    this._gmailService.fetchEmails(this.$userData()?.googleUserId!);
+    this._gmailService.getEmails(this.$userData()?.googleUserId!);
   }
 }
