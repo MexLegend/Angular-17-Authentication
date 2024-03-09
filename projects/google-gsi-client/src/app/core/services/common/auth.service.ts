@@ -72,7 +72,7 @@ export class AuthService extends BaseApiService {
   private _configureGoogleAuthentication(): void {
     google.accounts.id.initialize({
       client_id: environment.GOOGLE_CLIENT_ID,
-      callback: ({ credential: token }) => {
+      callback: ({ credential: token }: any) => {
         this._ngZone.run(() => {
           let authObservable: Observable<IUser>;
 

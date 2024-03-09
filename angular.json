@@ -378,6 +378,123 @@
           }
         }
       }
+    },
+    "firebase-auth": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/firebase-auth",
+      "sourceRoot": "projects/firebase-auth/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/firebase-auth",
+            "index": "projects/firebase-auth/src/index.html",
+            "browser": "projects/firebase-auth/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "projects/firebase-auth/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "projects/firebase-auth/src/favicon.ico",
+              "projects/firebase-auth/src/assets"
+            ],
+            "styles": [
+              "projects/firebase-auth/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "projects/firebase-auth/src/environments/environment.ts",
+                  "with": "projects/firebase-auth/src/environments/environment.development.ts"
+                }
+              ]
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "firebase-auth:build:production"
+            },
+            "development": {
+              "buildTarget": "firebase-auth:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "buildTarget": "firebase-auth:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "projects/firebase-auth/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "projects/firebase-auth/src/favicon.ico",
+              "projects/firebase-auth/src/assets"
+            ],
+            "styles": [
+              "projects/firebase-auth/src/styles.scss"
+            ],
+            "scripts": []
+          }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {
+            "version": 2
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "firebase-auth:build:production",
+              "serveTarget": "firebase-auth:serve:production"
+            },
+            "development": {
+              "buildTarget": "firebase-auth:build:development",
+              "serveTarget": "firebase-auth:serve:development"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
     }
   }
 }

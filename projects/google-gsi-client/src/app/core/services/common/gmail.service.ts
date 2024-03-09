@@ -5,7 +5,7 @@ import {
   GOOGLE_API_URL_USERS,
 } from '@core/google-gsi-client/constants';
 import { environment } from '@env/google-gsi-client/environment';
-import { Observable, finalize, forkJoin, map, mergeMap, tap } from 'rxjs';
+import { Observable, finalize, forkJoin, map, mergeMap } from 'rxjs';
 import { IError } from '@core/google-gsi-client/models/error.interface';
 import { IGmailState } from '@core/google-gsi-client/models/gmail.interface';
 

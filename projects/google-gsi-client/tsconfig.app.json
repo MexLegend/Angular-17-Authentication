@@ -2,7 +2,8 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../out-tsc/app"
+    "outDir": "../../out-tsc/app",
+    "types": ["google-one-tap", "gsi"]
   },
   "files": ["src/main.ts"],
   "include": ["src/**/*.d.ts"]

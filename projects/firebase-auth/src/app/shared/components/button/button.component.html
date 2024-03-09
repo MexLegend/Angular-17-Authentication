@@ -1,0 +1,14 @@
+<button
+  class="flex items-center justify-center gap-2 bg-primary text-white rounded-full px-8 h-12 transition-all hover:bg-primary/70 active:scale-95 disabled:pointer-events-none disabled:opacity-70 {{
+    customClasses
+  }}"
+  [type]="buttonType"
+  [disabled]="disableButton || isLoading"
+>
+  @if (isLoading) {
+  <app-loading-icon class="animate-spin" />
+  } @else {
+  <ng-content />
+  {{ label }}
+  }
+</button>

@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "handy-theory-415020": {
+      "hosting": {
+        "firebase-auth": [
+          "handy-theory-415020"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "handy-theory-415020"
+  }
+}

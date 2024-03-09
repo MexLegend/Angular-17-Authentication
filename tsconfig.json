@@ -31,6 +31,15 @@
       ],
       "@shared/google-auth2-gapi/*": [
         "projects/google-auth2-gapi/src/app/shared/*"
+      ],
+      "@env/firebase-auth/*": [
+        "projects/firebase-auth/src/environments/*"
+      ],
+      "@core/firebase-auth/*": [
+        "projects/firebase-auth/src/app/core/*"
+      ],
+      "@shared/firebase-auth/*": [
+        "projects/firebase-auth/src/app/shared/*"
       ]
     },
     "forceConsistentCasingInFileNames": true,
