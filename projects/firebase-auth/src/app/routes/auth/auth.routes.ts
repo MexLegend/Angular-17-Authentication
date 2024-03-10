@@ -16,6 +16,13 @@ export const AUTH_ROUTES: Routes = [
       ),
   },
   {
+    path: 'link-account',
+    loadComponent: () =>
+      import('./pages/link-account-page/link-account-page.component').then(
+        (c) => c.LinkAccountPageComponent
+      ),
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',

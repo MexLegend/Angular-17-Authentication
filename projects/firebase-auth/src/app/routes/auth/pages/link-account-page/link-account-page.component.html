@@ -1,0 +1,46 @@
+<app-auth-form-container
+  title="Link your account"
+  authAction="LOGIN"
+  hideSocialAuthActions=""
+>
+  <form
+    [formGroup]="form"
+    (ngSubmit)="signIn()"
+    class="flex flex-col gap-6 w-full items-center justify-center"
+  >
+    <app-auth-form class="w-full" hideEmailInput />
+    <section class="flex w-full flex-col gap-3">
+      <label for="login-confirm-password" class="text-sm font-medium"
+        >Confirm password</label
+      >
+      <input
+        id="login-confirm-password"
+        type="text"
+        formControlName="confirmPassword"
+        class="border p-2 border-slate-300 focus:border-primary active:border-primary focus:outline-primary active:outline-primary rounded-lg"
+      />
+    </section>
+    <app-button
+      label="Link Account"
+      class="w-full mt-4"
+      customClasses="w-full font-medium"
+      [ngClass]="{ 'cursor-not-allowed': $isLoading() }"
+      [isLoading]="$isLoading()"
+      buttonType="submit"
+    />
+    @if (formError && formError.httpError === 'WRONG_CREDENTIALS') {
+    <a
+      class="opacity-80 text-primary font-medium hover:underline text-sm cursor-pointer"
+    >
+      Forgot password?
+    </a>
+    }
+    <a
+      class="flex items-center justify-center gap-2 opacity-80 hover:text-primary hover:underline cursor-pointer"
+      routerLink="/auth/register"
+    >
+    <app-down-arrow-icon class="block rotate-90 opacity-80 mt-[2px]" [size]="16" />
+      Go back
+    </a>
+  </form>
+</app-auth-form-container>

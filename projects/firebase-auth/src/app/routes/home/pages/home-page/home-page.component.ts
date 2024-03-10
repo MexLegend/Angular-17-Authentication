@@ -17,7 +17,7 @@ import { AuthService } from '@core/firebase-auth/services/common/auth.service';
 import { PROVIDER_FIREBASE_AUTH } from '@core/firebase-auth/constants';
 import { AUTH_PROVIDERS } from '@core/firebase-auth/constants/auth-providers.constant';
 import { AuthProviderLinkPipe } from '@core/firebase-auth/pipes';
-import { IError } from '@core/firebase-auth/models';
+import { IHttpError } from '@core/firebase-auth/models';
 import { HttpErrorComponent } from '@shared/firebase-auth/components/http-error/auth-form-error.component';
 import { UserAvatarComponent } from '@shared/firebase-auth/components/user-avatar/user-avatar.component';
 
@@ -48,7 +48,7 @@ export class HomePageComponent {
   readonly authProviders = AUTH_PROVIDERS;
   readonly $userData: Signal<IUser | null> = this._userService.$user;
   readonly $isLoading: Signal<boolean> = this._authService.$isLoadingAuth;
-  readonly $providerError: WritableSignal<IError | null> = signal(null);
+  readonly $providerError: WritableSignal<IHttpError | null> = signal(null);
 
   linkOrUnlinkAccount(authProvider: PROVIDER_FIREBASE_AUTH) {
     this.$providerError.set(null);
@@ -59,7 +59,7 @@ export class HomePageComponent {
           providerData: user.providerData,
         });
       },
-      error: (error: IError) => {
+      error: (error: IHttpError) => {
         error.httpError === 'UNAUTHORIZED'
           ? this._authService.signOut()
           : this.$providerError.set(error);

@@ -22,7 +22,7 @@ import { FormValidators } from '@core/firebase-auth/helpers';
 import { ControlErrorsDirective } from '@core/firebase-auth/directives';
 import { FormSubmitDirective } from '@core/firebase-auth/directives';
 import { RouterLink } from '@angular/router';
-import { IAuthError } from '@core/firebase-auth/models/error.interface';
+import { IHttpError } from '@core/firebase-auth/models/http-error.interface';
 import { NgClass } from '@angular/common';
 import { AuthFormContainerComponent } from '../../components/auth-form-container/auth-form-container.component';
 import { AuthService } from '@core/firebase-auth/services/common/auth.service';
@@ -52,7 +52,7 @@ export class LoginPageComponent implements OnDestroy {
   readonly $isLoading: Signal<boolean> = this._authService.$isLoadingAuth;
 
   form!: FormGroup<ILoginForm>;
-  formError?: IAuthError;
+  formError?: IHttpError;
 
   constructor() {
     this.initForm();
@@ -95,7 +95,7 @@ export class LoginPageComponent implements OnDestroy {
         next: () => {
           this._authService.authenticateUser();
         },
-        error: (error: IAuthError) => {
+        error: (error: IHttpError) => {
           this._authService.setAuthError(error);
         },
       });

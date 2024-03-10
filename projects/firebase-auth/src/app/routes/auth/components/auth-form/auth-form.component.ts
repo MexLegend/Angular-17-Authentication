@@ -1,7 +1,9 @@
 import {
   Component,
+  Input,
   OnInit,
   WritableSignal,
+  booleanAttribute,
   inject,
   signal,
 } from '@angular/core';
@@ -27,6 +29,8 @@ import { EyeSlashIconComponent } from '@shared/firebase-auth/icons/eye-slash-ico
   styleUrl: './auth-form.component.scss',
 })
 export class AuthFormComponent implements OnInit {
+  @Input({ transform: booleanAttribute }) hideEmailInput: boolean = false;
+
   private readonly _parentContainer = inject(ControlContainer);
   formGroup!: FormGroup;
   readonly showPassword: WritableSignal<boolean> = signal(false);

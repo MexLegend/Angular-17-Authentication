@@ -7,12 +7,12 @@ import {
   PROVIDER_FIREBASE_AUTH,
 } from '@core/firebase-auth/constants';
 import { Observable, finalize, map, of, switchMap } from 'rxjs';
-import { IAuthError } from '@core/firebase-auth/models';
+import { IHttpError } from '@core/firebase-auth/models';
 import { IAuthState } from '@core/firebase-auth/models';
 import { BaseApiService } from '@core/firebase-auth/models';
 import { FirebaseAuthService } from '@core/firebase-auth/services/utils/firebase/firebase-auth.service';
 import { FirebaseStoreService } from '@core/firebase-auth/services/utils/firebase/firebase-store.service';
-import { User, UserCredential } from '@angular/fire/auth';
+import { AuthCredential, User, UserCredential } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -26,7 +26,7 @@ export class AuthService extends BaseApiService {
 
   private readonly _authState: IAuthState = {
     $isLoadingAuth: signal<boolean>(false),
-    $authError: signal<IAuthError | null>(null),
+    $authError: signal<IHttpError | null>(null),
   } as const;
 
   readonly isLoggedIn$ = this._firebaseAuthService._$authState.pipe(
@@ -43,7 +43,7 @@ export class AuthService extends BaseApiService {
     this._authState.$isLoadingAuth.set(isLoading);
   }
 
-  setAuthError(error: IAuthError | null): void {
+  setAuthError(error: IHttpError | null): void {
     this._authState.$authError.set(error);
   }
 
@@ -75,6 +75,16 @@ export class AuthService extends BaseApiService {
         }),
         finalize(() => this.setIsLoading(false))
       );
+  }
+
+  authenticateAndLinkAccount(
+    credential: ILoginData,
+    pendingCredential: AuthCredential
+  ) {
+    return this._firebaseAuthService.authenticateAndLinkAccount(
+      credential,
+      pendingCredential
+    );
   }
 
   signUpWithEmailAndPassword(registerData: IRegisterData): Observable<IUser> {

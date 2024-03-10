@@ -1,5 +1,5 @@
-import { NgClass } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   OnDestroy,
   Signal,
@@ -12,40 +12,48 @@ import {
   NonNullableFormBuilder,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { FormValidators } from '@core/firebase-auth/helpers';
-import { IRegisterData, IRegisterForm } from '@core/firebase-auth/models';
-import { IHttpError } from '@core/firebase-auth/models';
-import { AuthService } from '@core/firebase-auth/services/common/auth.service';
-import { AuthFormContainerComponent } from '../../components/auth-form-container/auth-form-container.component';
 import { ButtonComponent } from '@shared/firebase-auth/components/button/button.component';
+import {
+  ILinkAccountData,
+  ILinkAccountForm,
+} from '@core/firebase-auth/models/auth.interface';
 import { AuthFormComponent } from '../../components/auth-form/auth-form.component';
+import { FormValidators } from '@core/firebase-auth/helpers';
 import { ControlErrorsDirective } from '@core/firebase-auth/directives';
 import { FormSubmitDirective } from '@core/firebase-auth/directives';
+import { RouterLink } from '@angular/router';
+import { IHttpError } from '@core/firebase-auth/models/http-error.interface';
+import { Location, NgClass } from '@angular/common';
+import { AuthFormContainerComponent } from '../../components/auth-form-container/auth-form-container.component';
+import { AuthService } from '@core/firebase-auth/services/common/auth.service';
+import { DownArrowIconComponent } from '@shared/firebase-auth/icons/down-arrow-icon.component';
 
 @Component({
-  selector: 'app-register-page',
+  selector: 'app-link-account-page',
   standalone: true,
   imports: [
     AuthFormContainerComponent,
     ButtonComponent,
     AuthFormComponent,
+    DownArrowIconComponent,
     ReactiveFormsModule,
     ControlErrorsDirective,
     FormSubmitDirective,
     RouterLink,
     NgClass,
   ],
-  templateUrl: './register-page.component.html',
-  styleUrl: './register-page.component.scss',
+  templateUrl: './link-account-page.component.html',
+  styleUrl: './link-account-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RegisterPageComponent implements OnDestroy {
+export class LinkAccountPageComponent implements OnDestroy {
   private readonly _fb = inject(NonNullableFormBuilder);
   private readonly _authService = inject(AuthService);
+  private readonly _location = inject(Location);
 
   readonly $isLoading: Signal<boolean> = this._authService.$isLoadingAuth;
 
-  form!: FormGroup<IRegisterForm>;
+  form!: FormGroup<ILinkAccountForm>;
   formError?: IHttpError;
 
   constructor() {
@@ -68,12 +76,8 @@ export class RegisterPageComponent implements OnDestroy {
   }
 
   initForm(): void {
-    this.form = this._fb.group<IRegisterForm>(
+    this.form = this._fb.group<ILinkAccountForm>(
       {
-        name: this._fb.control('', {
-          validators: [FormValidators.required('Enter the name')],
-        }),
-        phoneNumber: this._fb.control(''),
         email: this._fb.control('', {
           validators: [
             FormValidators.required('Enter the email'),
@@ -92,12 +96,12 @@ export class RegisterPageComponent implements OnDestroy {
       }
     );
   }
-
-  signUp() {
+  
+  signIn() {
     this._authService.setAuthError(null);
     if (this.form.valid) {
-      const registerData: IRegisterData = this.form.getRawValue();
-      this._authService.signUpWithEmailAndPassword(registerData).subscribe({
+      const loginData: ILinkAccountData = this.form.getRawValue();
+      this._authService.signInWithEmailAndPassword(loginData).subscribe({
         next: () => {
           this._authService.authenticateUser();
         },
@@ -106,5 +110,9 @@ export class RegisterPageComponent implements OnDestroy {
         },
       });
     }
+  }
+
+  navigateBack(){
+    this._location.back();
   }
 }

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { IError } from '@core/firebase-auth/models/error.interface';
+import { IHttpError } from '@core/firebase-auth/models/http-error.interface';
 import { ErrorIconComponent } from '@shared/firebase-auth/icons/error-icon.component';
 
 @Component({
@@ -16,5 +16,5 @@ import { ErrorIconComponent } from '@shared/firebase-auth/icons/error-icon.compo
   `,
 })
 export class HttpErrorComponent {
-  @Input({ required: true }) error!: IError;
+  @Input({ required: true }) error!: IHttpError;
 }

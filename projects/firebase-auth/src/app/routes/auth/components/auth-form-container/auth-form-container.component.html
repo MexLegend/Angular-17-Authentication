@@ -11,6 +11,8 @@
     <app-http-error [error]="$authError()!" class="w-full" />
     }
     <ng-content />
+    @if (!hideSocialAuthActions) {
     <app-social-auth-actions class="w-full" />
+    }
   </div>
 </section>

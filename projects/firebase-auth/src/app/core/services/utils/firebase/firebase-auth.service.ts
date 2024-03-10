@@ -13,7 +13,6 @@ import {
   UserCredential,
   authState,
   createUserWithEmailAndPassword,
-  fetchSignInMethodsForEmail,
   getAdditionalUserInfo,
   linkWithCredential,
   linkWithPopup,
@@ -37,7 +36,7 @@ import {
 } from '@core/firebase-auth/constants';
 import {
   HTTP_ERROR_TYPES,
-  IAuthError,
+  IHttpError,
   IAuthWithProviderResponse,
   ILoginData,
   IRegisterData,
@@ -87,6 +86,15 @@ export class FirebaseAuthService {
     return this._signInWithPopup(provider);
   }
 
+  public authenticateAndLinkAccount(
+    credential: ILoginData,
+    pendingCredential: AuthCredential
+  ) {
+    return this.signInWithEmailAndPassword(credential).pipe(
+      switchMap(({ user }) => this._linkWithCredential(user, pendingCredential))
+    );
+  }
+
   public signOut(): Observable<void> {
     return from(this._auth.signOut()).pipe(
       catchError((error) => this._catchFirebaseError(error))
@@ -104,7 +112,7 @@ export class FirebaseAuthService {
           ({
             httpError: HTTP_ERROR_TYPES.UNAUTHORIZED,
             message: 'User not logged in',
-          } as IAuthError)
+          } as IHttpError)
       );
 
     const provider = this._getProviderAuthInstance(authProvider);
@@ -158,7 +166,7 @@ export class FirebaseAuthService {
           isNewUser,
         };
       })
-    ).pipe(catchError((error) => this._catchFirebaseLinkedAccountError(error)));
+    ).pipe(catchError((error) => this._catchFirebaseAccountExistsError(error)));
   }
 
   private _getProviderAuthInstance(
@@ -182,51 +190,34 @@ export class FirebaseAuthService {
     return provider?.providerId || null;
   }
 
-  private _catchFirebaseLinkedAccountError(
+  private _catchFirebaseAccountExistsError(
     error: FirebaseError
-  ): Observable<IAuthWithProviderResponse | never> {
+  ): Observable<never> {
     if (error.code === 'auth/account-exists-with-different-credential') {
-      const providerId = error.customData?.['providerId'] as string;
-      const accessToken = error.customData?.['oauthAccessToken'] as string;
-      const pendingCred = new OAuthProvider(providerId).credential({
+      const errorTokenResponse = error.customData?.['_tokenResponse'] as Record<
+        string,
+        unknown
+      >;
+      const providerId = errorTokenResponse?.['providerId'] as string;
+      const accessToken = errorTokenResponse?.['oauthAccessToken'] as string;
+      const email = errorTokenResponse?.['email'] as string;
+      const pendingCredential = new OAuthProvider(providerId).credential({
         accessToken,
       });
-      const email = error.customData?.['email'] as string;
-      // Get the sign-in methods for this email.
-      return from(fetchSignInMethodsForEmail(this._auth, email)).pipe(
-        switchMap((methods) => {
-          // If the user has several sign-in methods, the first method
-          // in the list will be the "recommended" method to use.
-          if (methods[0] === 'password') {
-            // TODO: Ask the user for their password.
-            // In real scenario, you should handle this asynchronously.
-            const password = '';
-            return this.signInWithEmailAndPassword({ email, password }).pipe(
-              switchMap(({ user }) =>
-                this._linkWithCredential(user, pendingCred)
-              )
-            );
-          }
 
-          // All other cases are external providers.
-          // Construct provider object for that provider.
-          // TODO: Implement getProviderForProviderId.
-          var provider = getProviderForProviderId(methods[0]);
+      const formatedError: IHttpError = {
+        ...error,
+        httpError: HTTP_ERROR_TYPES.BAD_REQUEST_ERROR,
+        message: this._formatErrorMessage(error.code),
+        customData: {
+          shouldRequestLinkAccount: true,
+          email,
+          pendingCredential,
+        },
+      };
 
-          // At this point, you should let the user know that they already have an
-          // account with a different provider, and validate they want to sign in
-          // with the new provider.
-          return this._signInWithPopup(provider).pipe(
-            switchMap(({ userCredential: { user } }) =>
-              this._linkWithCredential(user, pendingCred)
-            )
-          );
-        }),
-        map((userCredential) => ({
-          userCredential,
-          isNewUser: false,
-        }))
-      );
+      // Propagate Error To Ask User For Linking Account
+      return throwError(() => formatedError);
     }
 
     // Propagate Error

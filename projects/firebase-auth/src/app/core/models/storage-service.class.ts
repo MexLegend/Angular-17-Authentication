@@ -1,7 +1,7 @@
 import { IStorageValue } from './storage.interface';
 
 export abstract class StorageService implements Storage {
-  constructor(protected readonly _api: Storage) {}
+  constructor(protected _api: Storage) {}
 
   get length(): number {
     return this._api.length;
@@ -45,5 +45,9 @@ export abstract class StorageService implements Storage {
   setItem(key: string, value: unknown): void {
     let data = JSON.stringify({ value });
     this._api.setItem(key, data);
+  }
+
+  changeStorage(api: Storage) {
+    this._api = api;
   }
 }
