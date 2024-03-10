@@ -16,3 +16,8 @@ export interface IUser {
   address?: string | null;
   providerData: UserInfo[];
 }
+
+export interface IUserAvatar {
+  initials: string;
+  bgColor: string;
+}

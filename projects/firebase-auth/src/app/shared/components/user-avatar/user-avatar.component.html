@@ -1,0 +1,22 @@
+@if (userData.photoURL) {
+<figure
+  class="relative size-full transition-colors hover:bg-slate-100 rounded-full overflow-hidden"
+>
+  <img
+    class="object-cover"
+    [ngSrc]="userData.photoURL"
+    [alt]="'user-avatar-' + userData.name"
+    priority
+    fill
+  />
+</figure>
+} @else { @if((userData.name || '') | userInitialsAvatar; as userAvatar){
+<div
+  class="flex items-center justify-center size-full rounded-full text-white"
+  [style.background-color]="userAvatar.bgColor"
+>
+  <span class="uppercase text-xl">
+    {{ userAvatar.initials }}
+  </span>
+</div>
+} }

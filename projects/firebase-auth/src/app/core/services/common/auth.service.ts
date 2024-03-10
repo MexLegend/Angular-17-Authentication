@@ -54,6 +54,7 @@ export class AuthService extends BaseApiService {
   }
 
   authenticateWithProvider(authProvider: PROVIDER_FIREBASE_AUTH) {
+    this.setAuthError(null);
     return this._firebaseAuthService
       .authenticateWithProvider(authProvider)
       .pipe(
@@ -67,7 +68,7 @@ export class AuthService extends BaseApiService {
               name: user.displayName,
               phoneNumber: user.phoneNumber,
               photoURL: user.photoURL,
-              providerData: user.providerData
+              providerData: user.providerData,
             });
           }
           return of(user);

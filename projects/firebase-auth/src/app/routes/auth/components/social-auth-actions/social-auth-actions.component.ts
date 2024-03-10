@@ -38,8 +38,6 @@ export class SocialAuthActionsComponent {
         this._authService.authenticateUser();
       },
       error: (error: IAuthError) => {
-        console.log(error);
-        
         this._authService.setAuthError(error);
       },
     });

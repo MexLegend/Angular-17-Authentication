@@ -35,6 +35,9 @@ dependencies:
   angular-oauth2-oidc:
     specifier: 17.0.1
     version: 17.0.1(@angular/common@17.2.3)(@angular/core@17.2.3)
+  crypto-js:
+    specifier: ^4.2.0
+    version: 4.2.0
   rxjs:
     specifier: ~7.8.0
     version: 7.8.1
@@ -55,6 +58,9 @@ devDependencies:
   '@angular/compiler-cli':
     specifier: ^17.1.0
     version: 17.2.3(@angular/compiler@17.2.3)(typescript@5.3.3)
+  '@types/crypto-js':
+    specifier: ^4.2.2
+    version: 4.2.2
   '@types/gapi':
     specifier: ^0.0.47
     version: 0.0.47
@@ -3090,6 +3096,10 @@ packages:
       '@types/node': 20.11.24
     dev: true
 
+  /@types/crypto-js@4.2.2:
+    resolution: {integrity: sha512-sDOLlVbHhXpAUAL0YHDUUwDZf3iN4Bwi4W6a0W0b+QcAezUbRtH4FVb+9J4h+XFPW7l/gQ9F8qC7P+Ec4k8QVQ==}
+    dev: true
+
   /@types/eslint-scope@3.7.7:
     resolution: {integrity: sha512-MzMFlSLBqNF2gcHWO0G1vP/YQyfvrxZ0bF+u7mzUdZ1/xK4A4sru+nraZz5i3iEIk1l1uyicaDVTB4QbbEkAYg==}
     dependencies:
@@ -4114,6 +4124,10 @@ packages:
       shebang-command: 2.0.0
       which: 2.0.2
     dev: true
+
+  /crypto-js@4.2.0:
+    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+    dev: false
 
   /css-loader@6.10.0(webpack@5.90.1):
     resolution: {integrity: sha512-LTSA/jWbwdMlk+rhmElbDR2vbtQoTBPr7fkJE+mxrHj+7ru0hUmHafDRzWIjIHTwpitWVaqY2/UWGRca3yUgRw==}

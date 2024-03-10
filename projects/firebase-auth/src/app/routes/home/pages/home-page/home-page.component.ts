@@ -19,6 +19,7 @@ import { AUTH_PROVIDERS } from '@core/firebase-auth/constants/auth-providers.con
 import { AuthProviderLinkPipe } from '@core/firebase-auth/pipes';
 import { IError } from '@core/firebase-auth/models';
 import { HttpErrorComponent } from '@shared/firebase-auth/components/http-error/auth-form-error.component';
+import { UserAvatarComponent } from '@shared/firebase-auth/components/user-avatar/user-avatar.component';
 
 @Component({
   selector: 'app-home-page',
@@ -29,6 +30,7 @@ import { HttpErrorComponent } from '@shared/firebase-auth/components/http-error/
     AuthProviderLinkPipe,
     NgClass,
     HttpErrorComponent,
+    UserAvatarComponent,
     LoadingIconComponent,
     GoogleIconComponent,
     FacebookBlueIconComponent,

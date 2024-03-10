@@ -2,22 +2,34 @@ import { inject, Injectable } from '@angular/core';
 import { FirebaseError } from '@angular/fire/app';
 import {
   Auth,
+  AuthCredential,
   AuthProvider,
   FacebookAuthProvider,
   GithubAuthProvider,
   GoogleAuthProvider,
+  OAuthProvider,
   TwitterAuthProvider,
   User,
   UserCredential,
   authState,
   createUserWithEmailAndPassword,
+  fetchSignInMethodsForEmail,
   getAdditionalUserInfo,
+  linkWithCredential,
   linkWithPopup,
   signInWithEmailAndPassword,
   signInWithPopup,
   unlink,
 } from '@angular/fire/auth';
-import { EMPTY, Observable, catchError, from, map, throwError } from 'rxjs';
+import {
+  EMPTY,
+  Observable,
+  catchError,
+  from,
+  map,
+  switchMap,
+  throwError,
+} from 'rxjs';
 import {
   FIREBASE_ERROR_MESSAGES,
   FIREBASE_WHITELIST_ERRORS,
@@ -124,6 +136,15 @@ export class FirebaseAuthService {
     );
   }
 
+  private _linkWithCredential(
+    user: User,
+    credential: AuthCredential
+  ): Observable<UserCredential> {
+    return from(linkWithCredential(user, credential)).pipe(
+      catchError((error) => this._catchFirebaseError(error))
+    );
+  }
+
   private _signInWithPopup(
     provider: AuthProvider
   ): Observable<IAuthWithProviderResponse> {
@@ -137,7 +158,7 @@ export class FirebaseAuthService {
           isNewUser,
         };
       })
-    ).pipe(catchError((error) => this._catchFirebaseError(error)));
+    ).pipe(catchError((error) => this._catchFirebaseLinkedAccountError(error)));
   }
 
   private _getProviderAuthInstance(
@@ -159,6 +180,57 @@ export class FirebaseAuthService {
       (provider) => provider.providerId === providerId
     );
     return provider?.providerId || null;
+  }
+
+  private _catchFirebaseLinkedAccountError(
+    error: FirebaseError
+  ): Observable<IAuthWithProviderResponse | never> {
+    if (error.code === 'auth/account-exists-with-different-credential') {
+      const providerId = error.customData?.['providerId'] as string;
+      const accessToken = error.customData?.['oauthAccessToken'] as string;
+      const pendingCred = new OAuthProvider(providerId).credential({
+        accessToken,
+      });
+      const email = error.customData?.['email'] as string;
+      // Get the sign-in methods for this email.
+      return from(fetchSignInMethodsForEmail(this._auth, email)).pipe(
+        switchMap((methods) => {
+          // If the user has several sign-in methods, the first method
+          // in the list will be the "recommended" method to use.
+          if (methods[0] === 'password') {
+            // TODO: Ask the user for their password.
+            // In real scenario, you should handle this asynchronously.
+            const password = '';
+            return this.signInWithEmailAndPassword({ email, password }).pipe(
+              switchMap(({ user }) =>
+                this._linkWithCredential(user, pendingCred)
+              )
+            );
+          }
+
+          // All other cases are external providers.
+          // Construct provider object for that provider.
+          // TODO: Implement getProviderForProviderId.
+          var provider = getProviderForProviderId(methods[0]);
+
+          // At this point, you should let the user know that they already have an
+          // account with a different provider, and validate they want to sign in
+          // with the new provider.
+          return this._signInWithPopup(provider).pipe(
+            switchMap(({ userCredential: { user } }) =>
+              this._linkWithCredential(user, pendingCred)
+            )
+          );
+        }),
+        map((userCredential) => ({
+          userCredential,
+          isNewUser: false,
+        }))
+      );
+    }
+
+    // Propagate Error
+    return this._catchFirebaseError(error);
   }
 
   private _catchFirebaseError(error: FirebaseError): Observable<never> {
