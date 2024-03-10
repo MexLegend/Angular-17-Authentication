@@ -21,7 +21,6 @@ import { IHttpError } from '@core/firebase-auth/models/';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthFormContainerComponent {
-  @Input({ required: true }) title!: string;
   @Input() authAction: AuthActionType = 'LOGIN';
   @Input({ transform: booleanAttribute }) hideSocialAuthActions: boolean =
     false;

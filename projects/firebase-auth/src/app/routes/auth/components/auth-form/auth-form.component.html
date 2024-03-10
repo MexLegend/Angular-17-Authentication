@@ -41,6 +41,19 @@
       }
     </div>
   </section>
+  @if (showConfirmPassword) {
+  <section class="flex w-full flex-col gap-3">
+    <label for="auth-confirm-password" class="text-sm font-medium"
+      >Confirm password</label
+    >
+    <input
+      id="auth-confirm-password"
+      type="text"
+      formControlName="confirmPassword"
+      class="border p-2 border-slate-300 focus:border-primary active:border-primary focus:outline-primary active:outline-primary rounded-lg"
+    />
+  </section>
+  }
 </fieldset>
 
 }

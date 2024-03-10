@@ -1,8 +1,8 @@
-<app-auth-form-container title="Sign in to your account" authAction="REGISTER">
+<app-auth-form-container authAction="REGISTER">
   <form
     [formGroup]="form"
     (ngSubmit)="signUp()"
-    class="flex flex-col gap-6 w-full items-center justify-center"
+    class="flex flex-col gap-4 w-full items-center justify-center"
   >
     <section class="flex w-full flex-col gap-3">
       <label for="login-name" class="text-sm font-medium">Name</label>
@@ -22,18 +22,7 @@
         class="border p-2 border-slate-300 focus:border-primary active:border-primary focus:outline-primary active:outline-primary rounded-lg"
       />
     </section>
-    <app-auth-form class="w-full" />
-    <section class="flex w-full flex-col gap-3">
-      <label for="login-confirm-password" class="text-sm font-medium"
-        >Confirm password</label
-      >
-      <input
-        id="login-confirm-password"
-        type="text"
-        formControlName="confirmPassword"
-        class="border p-2 border-slate-300 focus:border-primary active:border-primary focus:outline-primary active:outline-primary rounded-lg"
-      />
-    </section>
+    <app-auth-form class="w-full" showConfirmPassword />
     <app-button
       label="Sign Up"
       class="w-full mt-4"

@@ -1,4 +1,4 @@
-import { OAuthCredential, UserCredential } from '@angular/fire/auth';
+import { UserCredential } from '@angular/fire/auth';
 
 export interface IAuthWithProviderResponse {
   userCredential: UserCredential;
@@ -8,5 +8,6 @@ export interface IAuthWithProviderResponse {
 export interface IFirebaseErrorCustomData {
   shouldRequestLinkAccount: boolean;
   email: string;
-  pendingCredential: OAuthCredential;
+  accessToken: string;
+  providerId: string;
 }

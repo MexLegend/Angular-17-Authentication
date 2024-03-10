@@ -30,6 +30,7 @@ import { EyeSlashIconComponent } from '@shared/firebase-auth/icons/eye-slash-ico
 })
 export class AuthFormComponent implements OnInit {
   @Input({ transform: booleanAttribute }) hideEmailInput: boolean = false;
+  @Input({ transform: booleanAttribute }) showConfirmPassword: boolean = false;
 
   private readonly _parentContainer = inject(ControlContainer);
   formGroup!: FormGroup;

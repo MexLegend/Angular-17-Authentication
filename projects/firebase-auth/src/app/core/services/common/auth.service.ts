@@ -12,7 +12,12 @@ import { IAuthState } from '@core/firebase-auth/models';
 import { BaseApiService } from '@core/firebase-auth/models';
 import { FirebaseAuthService } from '@core/firebase-auth/services/utils/firebase/firebase-auth.service';
 import { FirebaseStoreService } from '@core/firebase-auth/services/utils/firebase/firebase-store.service';
-import { AuthCredential, User, UserCredential } from '@angular/fire/auth';
+import {
+  AuthCredential,
+  OAuthProvider,
+  User,
+  UserCredential,
+} from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -79,8 +84,13 @@ export class AuthService extends BaseApiService {
 
   authenticateAndLinkAccount(
     credential: ILoginData,
-    pendingCredential: AuthCredential
+    accessToken: string,
+    providerId: string
   ) {
+    const pendingCredential = new OAuthProvider(providerId).credential({
+      accessToken,
+    });
+
     return this._firebaseAuthService.authenticateAndLinkAccount(
       credential,
       pendingCredential

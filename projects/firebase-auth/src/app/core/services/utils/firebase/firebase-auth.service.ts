@@ -71,7 +71,11 @@ export class FirebaseAuthService {
         credential.email,
         credential.password
       )
-    ).pipe(catchError((error) => this._catchFirebaseError(error)));
+    ).pipe(
+      catchError((error) => {
+        return this._catchFirebaseError(error);
+      })
+    );
   }
 
   public authenticateWithProvider(
@@ -201,9 +205,6 @@ export class FirebaseAuthService {
       const providerId = errorTokenResponse?.['providerId'] as string;
       const accessToken = errorTokenResponse?.['oauthAccessToken'] as string;
       const email = errorTokenResponse?.['email'] as string;
-      const pendingCredential = new OAuthProvider(providerId).credential({
-        accessToken,
-      });
 
       const formatedError: IHttpError = {
         ...error,
@@ -212,7 +213,8 @@ export class FirebaseAuthService {
         customData: {
           shouldRequestLinkAccount: true,
           email,
-          pendingCredential,
+          accessToken,
+          providerId,
         },
       };
 

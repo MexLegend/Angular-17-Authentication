@@ -36,13 +36,11 @@ export interface IRegisterData {
 }
 
 export interface ILinkAccountForm {
-  email: FormControl<string>;
   password: FormControl<string>;
   confirmPassword: FormControl<string>;
 }
 
 export interface ILinkAccountData {
-  email: string;
   password: string;
   confirmPassword: string;
 }

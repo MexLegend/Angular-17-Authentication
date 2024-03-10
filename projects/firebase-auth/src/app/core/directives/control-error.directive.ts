@@ -7,7 +7,7 @@ import {
   inject,
 } from '@angular/core';
 import { NgControl } from '@angular/forms';
-import { EMPTY, fromEvent, merge, takeUntil } from 'rxjs';
+import { EMPTY, fromEvent, map, merge, takeUntil } from 'rxjs';
 import { ControlErrorComponent } from '@shared/firebase-auth/components/control-error/control-error.component';
 import { getFormControlError } from '@core/firebase-auth/helpers';
 import { FormSubmitDirective } from './form-submit.directive';
@@ -34,11 +34,19 @@ export class ControlErrorsDirective implements OnInit {
   );
 
   ngOnInit(): void {
-    merge(this._submit$, this._blurEvent$, this._ngControl.statusChanges!)
+    merge(
+      this._submit$.pipe(map(() => 'submit')),
+      this._blurEvent$.pipe(map(() => 'blur')),
+      this._ngControl.statusChanges!.pipe(map(() => 'status'))
+    )
       .pipe(takeUntil(this._autoDestroyService))
-      .subscribe(() => {
+      .subscribe((eventType) => {
         const errorControl = getFormControlError(this._ngControl.control!);
         this.setError(errorControl);
+
+        if (eventType === 'submit' && errorControl) {
+          this.setFocusOnFirstInvalidControl();
+        }
       });
   }
 
@@ -47,5 +55,14 @@ export class ControlErrorsDirective implements OnInit {
       this._componentRef = this._vcr.createComponent(ControlErrorComponent);
     }
     this._componentRef.instance.error = text;
+  }
+
+  setFocusOnFirstInvalidControl() {
+    const invalidControl =
+      this._form?.element.querySelector('input.ng-invalid');
+
+    if (invalidControl && document.activeElement !== invalidControl) {
+      (invalidControl as HTMLElement).focus();
+    }
   }
 }

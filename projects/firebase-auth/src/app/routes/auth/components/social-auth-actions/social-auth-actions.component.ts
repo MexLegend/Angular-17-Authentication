@@ -48,13 +48,9 @@ export class SocialAuthActionsComponent {
       error: (error: IHttpError) => {
         if (error.customData?.shouldRequestLinkAccount) {
           this._webStorageService.useStorage('session');
-          this._webStorageService.setItem(KEY_STORAGE.DATA_USER_CREDENTIAL, {
-            email: error.customData?.email,
-            pendingCredential: error.customData?.pendingCredential,
-          });
-          console.log("Here");
+          this._webStorageService.setItem(KEY_STORAGE.DATA_USER_CREDENTIAL, error.customData);
+
           this._router.navigate(['/auth/link-account']);
-          
           return;
         }
 

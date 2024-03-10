@@ -1,8 +1,8 @@
-<app-auth-form-container title="Sign in to your account" authAction="LOGIN">
+<app-auth-form-container authAction="LOGIN">
   <form
     [formGroup]="form"
     (ngSubmit)="signIn()"
-    class="flex flex-col gap-6 w-full items-center justify-center"
+    class="flex flex-col gap-4 w-full items-center justify-center"
   >
     <app-auth-form class="w-full" />
     <app-button

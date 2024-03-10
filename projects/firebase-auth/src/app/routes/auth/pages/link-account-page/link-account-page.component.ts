@@ -3,8 +3,11 @@ import {
   Component,
   OnDestroy,
   Signal,
+  WritableSignal,
+  computed,
   effect,
   inject,
+  signal,
   untracked,
 } from '@angular/core';
 import {
@@ -16,6 +19,7 @@ import { ButtonComponent } from '@shared/firebase-auth/components/button/button.
 import {
   ILinkAccountData,
   ILinkAccountForm,
+  ILoginData,
 } from '@core/firebase-auth/models/auth.interface';
 import { AuthFormComponent } from '../../components/auth-form/auth-form.component';
 import { FormValidators } from '@core/firebase-auth/helpers';
@@ -27,6 +31,9 @@ import { Location, NgClass } from '@angular/common';
 import { AuthFormContainerComponent } from '../../components/auth-form-container/auth-form-container.component';
 import { AuthService } from '@core/firebase-auth/services/common/auth.service';
 import { DownArrowIconComponent } from '@shared/firebase-auth/icons/down-arrow-icon.component';
+import { WebStorageService } from '@core/firebase-auth/services/utils/web-storage.service';
+import { KEY_STORAGE } from '@core/firebase-auth/constants';
+import { IFirebaseErrorCustomData } from '@core/firebase-auth/models';
 
 @Component({
   selector: 'app-link-account-page',
@@ -44,20 +51,38 @@ import { DownArrowIconComponent } from '@shared/firebase-auth/icons/down-arrow-i
   ],
   templateUrl: './link-account-page.component.html',
   styleUrl: './link-account-page.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LinkAccountPageComponent implements OnDestroy {
   private readonly _fb = inject(NonNullableFormBuilder);
   private readonly _authService = inject(AuthService);
+  private readonly _webStorageService = inject(WebStorageService);
   private readonly _location = inject(Location);
 
   readonly $isLoading: Signal<boolean> = this._authService.$isLoadingAuth;
+  readonly $userCredential: WritableSignal<IFirebaseErrorCustomData | null> =
+    signal(null);
+  readonly $providerName: Signal<string> = computed(
+    () => this.$userCredential()?.providerId.split('.')[0] || ''
+  );
 
   form!: FormGroup<ILinkAccountForm>;
   formError?: IHttpError;
 
   constructor() {
     this.initForm();
+    this._webStorageService.useStorage('session');
+    const userCredential =
+      this._webStorageService.getItem<IFirebaseErrorCustomData>(
+        KEY_STORAGE.DATA_USER_CREDENTIAL
+      );
+
+    if (!userCredential) {
+      this.navigateBack();
+      return;
+    }
+
+    this.$userCredential.set(userCredential);
 
     effect(() => {
       this.$isLoading()
@@ -78,12 +103,6 @@ export class LinkAccountPageComponent implements OnDestroy {
   initForm(): void {
     this.form = this._fb.group<ILinkAccountForm>(
       {
-        email: this._fb.control('', {
-          validators: [
-            FormValidators.required('Enter the email'),
-            FormValidators.email(),
-          ],
-        }),
         password: this._fb.control('', {
           validators: [FormValidators.required('Enter the password')],
         }),
@@ -96,23 +115,34 @@ export class LinkAccountPageComponent implements OnDestroy {
       }
     );
   }
-  
-  signIn() {
+
+  signIn(formRef: HTMLFormElement) {
     this._authService.setAuthError(null);
     if (this.form.valid) {
-      const loginData: ILinkAccountData = this.form.getRawValue();
-      this._authService.signInWithEmailAndPassword(loginData).subscribe({
-        next: () => {
-          this._authService.authenticateUser();
-        },
-        error: (error: IHttpError) => {
-          this._authService.setAuthError(error);
-        },
-      });
+      const { password }: ILinkAccountData = this.form.getRawValue();
+      const { email, accessToken, providerId } = this.$userCredential()!;
+      const credential: ILoginData = {
+        email,
+        password,
+      };
+
+      this._authService
+        .authenticateAndLinkAccount(credential, accessToken, providerId)
+        .subscribe({
+          next: () => {
+            this._authService.authenticateUser();
+          },
+          error: (error: IHttpError) => {
+            this.form.reset(undefined, { emitEvent: false });
+            const firstInput = formRef.querySelector('input') as HTMLElement;
+            firstInput.focus();
+            this._authService.setAuthError(error);
+          },
+        });
     }
   }
 
-  navigateBack(){
+  navigateBack() {
     this._location.back();
   }
 }
