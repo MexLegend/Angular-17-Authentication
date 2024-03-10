@@ -2,7 +2,7 @@ import { Injectable, OnDestroy, inject, signal } from '@angular/core';
 import { IUser, IUserState } from '@core/firebase-auth/models';
 import { FirebaseAuthService } from '@core/firebase-auth/services/utils/firebase/firebase-auth.service';
 import { FirebaseStoreService } from '@core/firebase-auth/services/utils/firebase/firebase-store.service';
-import { Subject, of, switchMap, takeUntil } from 'rxjs';
+import { Subject, map, of, switchMap, takeUntil } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -34,13 +34,17 @@ export class UserService implements OnDestroy {
           if (!user?.uid) {
             return of(null);
           }
-          return this._firebaseStoreService.getUser(user.uid);
+          return this._firebaseStoreService.getUser(user.uid).pipe(
+            map((resp) => ({
+              ...resp,
+              photoURL: resp.photoURL || user.photoURL,
+              providerData: user.providerData,
+            }))
+          );
         })
       )
       .subscribe({
         next: (user) => {
-          console.log('User');
-
           this.setUserData(user);
           this._setIsLoading(false);
         },

@@ -94,6 +94,7 @@ export class RegisterPageComponent implements OnDestroy {
   }
 
   signUp() {
+    this._authService.setAuthError(null);
     if (this.form.valid) {
       const registerData: IRegisterData = this.form.getRawValue();
       this._authService.signUpWithEmailAndPassword(registerData).subscribe({

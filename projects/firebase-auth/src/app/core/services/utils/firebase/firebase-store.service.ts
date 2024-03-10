@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { FirebaseError } from '@angular/fire/app';
-import { Observable, catchError, from, map, throwError } from 'rxjs';
+import { Observable, catchError, from, throwError } from 'rxjs';
 import { FIREBASE_ERROR_MESSAGES } from '@core/firebase-auth/constants';
 import {
   doc,

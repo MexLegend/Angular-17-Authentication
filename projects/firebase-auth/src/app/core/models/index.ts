@@ -1,3 +1,4 @@
+export * from './auth-providers.interfcae';
 export * from './auth.interface';
 export * from './base-api-service.class';
 export * from './error.interface';

@@ -12,7 +12,6 @@ export enum AUTH_FORM_ERRORS {
   EMAIL_ALREADY_REGISTERED = 'EMAIL_ALREADY_REGISTERED',
   WRONG_CREDENTIALS = 'WRONG_CREDENTIALS',
   ACCOUNT_NOT_VERIFIED = 'ACCOUNT_NOT_VERIFIED',
-  SERVER_ERROR = 'SERVER_ERROR',
 }
 
 export interface IError<T = HTTP_ERROR_TYPES | AUTH_FORM_ERRORS> {
@@ -21,4 +20,10 @@ export interface IError<T = HTTP_ERROR_TYPES | AUTH_FORM_ERRORS> {
   readonly message: string;
 }
 
-export interface IAuthError extends IError<AUTH_FORM_ERRORS> {}
+export interface IAuthError
+  extends IError<
+    | AUTH_FORM_ERRORS
+    | HTTP_ERROR_TYPES.SERVER_ERROR
+    | HTTP_ERROR_TYPES.CONFLICT
+    | HTTP_ERROR_TYPES.UNAUTHORIZED
+  > {}

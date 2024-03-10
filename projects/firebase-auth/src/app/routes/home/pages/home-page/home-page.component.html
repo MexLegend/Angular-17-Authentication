@@ -1,23 +1,84 @@
-<section class="flex items-start justify-center gap-3">
+<section class="flex items-start justify-center gap-6 mt-12">
   <article
-    class="flex gap-3 rounded-2xl shadow-lg p-6 border items-center w-max"
+    class="flex flex-col gap-3 rounded-2xl shadow-lg p-6 border items-center w-max min-w-72 min-h-48"
   >
-    <figure class="size-24 rounded-lg overflow-clip">
-      <img src="{{ $userData()?.phoneNumber }}" alt="user_image" />
+  @if ($userData(); as user) {
+    <h2 class="text-2xl font-semibold">User Details</h2>
+    <figure class="size-24 rounded-full overflow-clip relative">
+      <img
+        ngSrc="{{ user.photoURL }}"
+        alt="user_image"
+        priority
+        fetchpriority="high" 
+        fill
+      />
     </figure>
     <div class="flex flex-col gap-1">
       <div class="flex gap-2 items-center">
         <h2 class="font-semibold text-lg">ID</h2>
-        <p>{{ $userData()?.id }}</p>
+        <p>{{ user.id }}</p>
       </div>
       <div class="flex gap-2 items-center">
         <h2 class="font-semibold text-lg">Email</h2>
-        <p>{{ $userData()?.email }}</p>
+        <p>{{ user.email }}</p>
       </div>
       <div class="flex gap-2 items-center">
         <h2 class="font-semibold text-lg">Name</h2>
-        <p>{{ $userData()?.name }}</p>
+        <p>{{ user.name }}</p>
       </div>
     </div>
+    } @else {
+      <app-loading-icon [size]="40" class="animate-spin m-auto" />
+    }
+  </article>
+  <article
+    class="flex flex-col gap-6 rounded-2xl shadow-lg p-6 border items-center w-72 min-h-48"
+  >
+    @if ($userData(); as user) {
+    <div class="flex flex-col gap-4 w-full">
+      <h2 class="text-2xl font-semibold">Link / Unlink Account</h2>
+      @if ($providerError()) {
+      <app-http-error [error]="$providerError()!" />
+      } @for (provider of authProviders; track provider.id) {
+      <div
+        class="flex flex-1 items-center justify-center"
+        [ngClass]="{ 'cursor-not-allowed': $isLoading() }"
+      >
+        <button
+          type="button"
+          class="flex flex-1 gap-2 px-2 items-center justify-center rounded-xl transition-all hover:bg-slate-100 active:scale-95 border border-slate-300 py-3 disabled:pointer-events-none disabled:opacity-70"
+          [ngClass]="{
+            'bg-teal-100/80 text-teal-800 hover:bg-teal-200/60':
+              user | authProviderLink : provider.id
+          }"
+          (click)="linkOrUnlinkAccount(provider.method)"
+          [disabled]="$isLoading()"
+        >
+          @switch (provider.method) { @case ('GOOGLE') {
+          <app-google-icon />
+          } @case ('FACEBOOK') {
+          <app-facebook-blue-icon />
+          } @case ('TWITTER') {
+          <app-twitter-blue-icon />
+          } @default {
+          <app-github-icon />
+          } }
+          <p class="text-sm font-medium min-w-16 text-left">
+            {{ provider.label }}
+          </p>
+          <span
+            class="flex flex-1 items-center justify-end font-semibold text-xs"
+          >
+            {{
+              (user | authProviderLink : provider.id) ? "LINKED" : "UNLINKED"
+            }}
+          </span>
+        </button>
+      </div>
+      }
+    </div>
+    } @else {
+      <app-loading-icon [size]="40" class="animate-spin m-auto" />
+    }
   </article>
 </section>

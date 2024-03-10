@@ -1,4 +1,5 @@
 import { WritableSignal } from '@angular/core';
+import { UserInfo } from '@angular/fire/auth';
 
 export interface IUserState {
   $user: WritableSignal<IUser | null>;
@@ -13,4 +14,5 @@ export interface IUser {
   phoneNumber?: string | null;
   photoURL?: string | null;
   address?: string | null;
+  providerData: UserInfo[];
 }

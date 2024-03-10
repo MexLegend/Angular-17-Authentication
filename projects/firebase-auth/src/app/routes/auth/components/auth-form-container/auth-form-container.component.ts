@@ -6,7 +6,7 @@ import {
   inject,
 } from '@angular/core';
 import { SocialAuthActionsComponent } from '../social-auth-actions/social-auth-actions.component';
-import { AuthFormErrorComponent } from '../auth-form-error/auth-form-error.component';
+import { HttpErrorComponent } from '@shared/firebase-auth/components/http-error/auth-form-error.component';
 import { AuthActionType } from '@core/firebase-auth/models';
 import { AuthService } from '@core/firebase-auth/services/common/auth.service';
 import { IAuthError } from '@core/firebase-auth/models/';
@@ -14,7 +14,7 @@ import { IAuthError } from '@core/firebase-auth/models/';
 @Component({
   selector: 'app-auth-form-container',
   standalone: true,
-  imports: [AuthFormErrorComponent, SocialAuthActionsComponent],
+  imports: [HttpErrorComponent, SocialAuthActionsComponent],
   templateUrl: './auth-form-container.component.html',
   styleUrl: './auth-form-container.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

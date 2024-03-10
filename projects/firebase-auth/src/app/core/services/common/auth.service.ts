@@ -12,8 +12,7 @@ import { IAuthState } from '@core/firebase-auth/models';
 import { BaseApiService } from '@core/firebase-auth/models';
 import { FirebaseAuthService } from '@core/firebase-auth/services/utils/firebase/firebase-auth.service';
 import { FirebaseStoreService } from '@core/firebase-auth/services/utils/firebase/firebase-store.service';
-import { UserCredential } from '@angular/fire/auth';
-import { AuthActionType } from '@core/firebase-auth/models/auth.interface';
+import { User, UserCredential } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -54,14 +53,12 @@ export class AuthService extends BaseApiService {
     this._router.navigateByUrl(redirectUrl || '/');
   }
 
-  authenticateWithProvider(
-    authProvider: PROVIDER_FIREBASE_AUTH
-  ) {
+  authenticateWithProvider(authProvider: PROVIDER_FIREBASE_AUTH) {
     return this._firebaseAuthService
       .authenticateWithProvider(authProvider)
       .pipe(
-        // Store user in database
-        switchMap(({ isNewUser, userCredential: {user} }) => {      
+        switchMap(({ isNewUser, userCredential: { user } }) => {
+          // If is new user store him in database
           if (isNewUser) {
             return this._firebaseStoreService.addUser({
               id: user.uid,
@@ -70,6 +67,7 @@ export class AuthService extends BaseApiService {
               name: user.displayName,
               phoneNumber: user.phoneNumber,
               photoURL: user.photoURL,
+              providerData: user.providerData
             });
           }
           return of(user);
@@ -78,32 +76,29 @@ export class AuthService extends BaseApiService {
       );
   }
 
-  public signUpWithEmailAndPassword(
-    registerData: IRegisterData
-  ): Observable<IUser> {
-    this.setAuthError(null);
+  signUpWithEmailAndPassword(registerData: IRegisterData): Observable<IUser> {
     this.setIsLoading(true);
 
     return this._firebaseAuthService
       .signUpWithEmailAndPassword(registerData)
       .pipe(
         // Store user in database
-        switchMap(({ user: { uid, emailVerified } }) => {
+        switchMap(({ user: { uid, emailVerified, providerData } }) => {
           const { password, confirmPassword, ...userData } = registerData;
           return this._firebaseStoreService.addUser({
             ...userData,
             id: uid,
             emailVerified,
+            providerData,
           });
         }),
         finalize(() => this.setIsLoading(false))
       );
   }
 
-  public signInWithEmailAndPassword(
+  signInWithEmailAndPassword(
     loginData: ILoginData
   ): Observable<UserCredential> {
-    this.setAuthError(null);
     this.setIsLoading(true);
 
     return this._firebaseAuthService
@@ -117,5 +112,12 @@ export class AuthService extends BaseApiService {
         this._router.navigateByUrl('/auth');
       })
     );
+  }
+
+  linkOrUnlinkAccount(authProvider: PROVIDER_FIREBASE_AUTH): Observable<User> {
+    this.setIsLoading(true);
+    return this._firebaseAuthService
+      .linkOrUnlinkAccount(authProvider)
+      .pipe(finalize(() => this.setIsLoading(false)));
   }
 }

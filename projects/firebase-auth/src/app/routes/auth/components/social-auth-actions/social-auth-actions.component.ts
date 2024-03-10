@@ -10,11 +10,19 @@ import { IAuthError } from '@core/firebase-auth/models';
 import { PROVIDER_FIREBASE_AUTH } from '@core/firebase-auth/constants';
 import { GoogleIconComponent } from '@shared/firebase-auth/icons/google-icon.component';
 import { FacebookBlueIconComponent } from '@shared/firebase-auth/icons/facebook-blue-icon.component';
+import { GithubIconComponent } from '@shared/firebase-auth/icons/github-icon.component';
+import { TwitterBlueIconComponent } from '@shared/firebase-auth/icons/twitter-blue-icon.component';
 
 @Component({
   selector: 'app-social-auth-actions',
   standalone: true,
-  imports: [GoogleIconComponent, FacebookBlueIconComponent, NgClass],
+  imports: [
+    GoogleIconComponent,
+    FacebookBlueIconComponent,
+    GithubIconComponent,
+    TwitterBlueIconComponent,
+    NgClass,
+  ],
   providers: [],
   templateUrl: './social-auth-actions.component.html',
   styleUrl: './social-auth-actions.component.scss',
@@ -30,6 +38,8 @@ export class SocialAuthActionsComponent {
         this._authService.authenticateUser();
       },
       error: (error: IAuthError) => {
+        console.log(error);
+        
         this._authService.setAuthError(error);
       },
     });

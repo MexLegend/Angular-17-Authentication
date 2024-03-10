@@ -88,6 +88,7 @@ export class LoginPageComponent implements OnDestroy {
   }
 
   signIn() {
+    this._authService.setAuthError(null);
     if (this.form.valid) {
       const loginData: ILoginData = this.form.getRawValue();
       this._authService.signInWithEmailAndPassword(loginData).subscribe({
