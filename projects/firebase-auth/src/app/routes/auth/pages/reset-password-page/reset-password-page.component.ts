@@ -17,14 +17,14 @@ import {
 } from '@angular/forms';
 import { ButtonComponent } from '@shared/firebase-auth/components/button/button.component';
 import {
-  ILinkAccountData,
-  ILinkAccountForm,
-  ILoginData,
+  IResetPasswordData,
+  IResetPasswordForm,
 } from '@core/firebase-auth/models/auth.interface';
 import { AuthFormComponent } from '../../components/auth-form/auth-form.component';
 import { FormValidators } from '@core/firebase-auth/helpers';
 import { ControlErrorsDirective } from '@core/firebase-auth/directives';
 import { FormSubmitDirective } from '@core/firebase-auth/directives';
+import { RouterLink } from '@angular/router';
 import { IHttpError } from '@core/firebase-auth/models/http-error.interface';
 import { Location, NgClass } from '@angular/common';
 import { AuthFormContainerComponent } from '../../components/auth-form-container/auth-form-container.component';
@@ -35,7 +35,7 @@ import { KEY_STORAGE } from '@core/firebase-auth/constants';
 import { IFirebaseErrorCustomData } from '@core/firebase-auth/models';
 
 @Component({
-  selector: 'app-link-account-page',
+  selector: 'app-reset-password-page',
   standalone: true,
   imports: [
     AuthFormContainerComponent,
@@ -45,13 +45,14 @@ import { IFirebaseErrorCustomData } from '@core/firebase-auth/models';
     ReactiveFormsModule,
     ControlErrorsDirective,
     FormSubmitDirective,
+    RouterLink,
     NgClass,
   ],
-  templateUrl: './link-account-page.component.html',
-  styleUrl: './link-account-page.component.scss',
+  templateUrl: './reset-password-page.component.html',
+  styleUrl: './reset-password-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LinkAccountPageComponent implements OnDestroy {
+export class ResetPasswordPageComponent implements OnDestroy {
   private readonly _fb = inject(NonNullableFormBuilder);
   private readonly _authService = inject(AuthService);
   private readonly _webStorageService = inject(WebStorageService);
@@ -64,7 +65,7 @@ export class LinkAccountPageComponent implements OnDestroy {
     () => this.$userCredential()?.providerId.split('.')[0] || ''
   );
 
-  form!: FormGroup<ILinkAccountForm>;
+  form!: FormGroup<IResetPasswordForm>;
   formError?: IHttpError;
 
   constructor() {
@@ -74,6 +75,11 @@ export class LinkAccountPageComponent implements OnDestroy {
       this._webStorageService.getItem<IFirebaseErrorCustomData>(
         KEY_STORAGE.DATA_USER_CREDENTIAL
       );
+
+    if (!userCredential) {
+      this.navigateBack();
+      return;
+    }
 
     this.$userCredential.set(userCredential);
 
@@ -94,47 +100,29 @@ export class LinkAccountPageComponent implements OnDestroy {
   }
 
   initForm(): void {
-    this.form = this._fb.group<ILinkAccountForm>(
-      {
-        password: this._fb.control('', {
-          validators: [FormValidators.required('Enter the password')],
-        }),
-        confirmPassword: this._fb.control('', {
-          validators: [FormValidators.required('Confirm the password')],
-        }),
-      },
-      {
-        validators: FormValidators.passwordMismatch(),
-      }
-    );
+    this.form = this._fb.group<IResetPasswordForm>({
+      email: this._fb.control('', {
+        validators: [
+          FormValidators.required('Enter the email'),
+          FormValidators.email(),
+        ],
+      }),
+    });
   }
 
-  linkAccount(formRef: HTMLFormElement) {
+  resetPassword(formRef: HTMLFormElement) {
     this._authService.setAuthError(null);
     if (this.form.valid) {
-      const { password }: ILinkAccountData = this.form.getRawValue();
-      const { email, accessToken, providerId } = this.$userCredential()!;
-      const credential: ILoginData = {
-        email,
-        password,
-      };
+      const { email }: IResetPasswordData = this.form.getRawValue();
 
-      this._authService
-        .authenticateAndLinkAccount(credential, accessToken, providerId)
-        .subscribe({
-          next: () => {
-            this._authService.authenticateUser();
-            this._webStorageService.removeItem(
-              KEY_STORAGE.DATA_USER_CREDENTIAL
-            );
-          },
-          error: (error: IHttpError) => {
-            this.form.reset(undefined, { emitEvent: false });
-            const firstInput = formRef.querySelector('input') as HTMLElement;
-            firstInput.focus();
-            this._authService.setAuthError(error);
-          },
-        });
+      this._authService.sendPasswordResetEmail(email).subscribe({
+        error: (error: IHttpError) => {
+          this.form.reset(undefined, { emitEvent: false });
+          const firstInput = formRef.querySelector('input') as HTMLElement;
+          firstInput.focus();
+          this._authService.setAuthError(error);
+        },
+      });
     }
   }
 

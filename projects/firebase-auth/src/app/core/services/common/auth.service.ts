@@ -3,6 +3,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { ILoginData, IRegisterData, IUser } from '@core/firebase-auth/models';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
+  APP_BASE_PATH,
   AUTH_REDIRECT,
   PROVIDER_FIREBASE_AUTH,
 } from '@core/firebase-auth/constants';
@@ -13,6 +14,7 @@ import { BaseApiService } from '@core/firebase-auth/models';
 import { FirebaseAuthService } from '@core/firebase-auth/services/utils/firebase/firebase-auth.service';
 import { FirebaseStoreService } from '@core/firebase-auth/services/utils/firebase/firebase-store.service';
 import {
+  ActionCodeSettings,
   AuthCredential,
   OAuthProvider,
   User,
@@ -35,7 +37,7 @@ export class AuthService extends BaseApiService {
   } as const;
 
   readonly isLoggedIn$ = this._firebaseAuthService._$authState.pipe(
-    map((res) => !!res)
+    map((res) => !!res && res.emailVerified)
   );
   readonly $isLoadingAuth = this._authState.$isLoadingAuth.asReadonly();
   readonly $authError = this._authState.$authError.asReadonly();
@@ -99,12 +101,17 @@ export class AuthService extends BaseApiService {
 
   signUpWithEmailAndPassword(registerData: IRegisterData): Observable<IUser> {
     this.setIsLoading(true);
+    const actionCodeSettings: ActionCodeSettings = {
+      url: `${APP_BASE_PATH}/home`,
+    };
 
     return this._firebaseAuthService
-      .signUpWithEmailAndPassword(registerData)
+      .signUpWithEmailAndPassword(registerData, actionCodeSettings)
       .pipe(
         // Store user in database
         switchMap(({ user: { uid, emailVerified, providerData } }) => {
+          console.log(registerData);
+
           const { password, confirmPassword, ...userData } = registerData;
           return this._firebaseStoreService.addUser({
             ...userData,
@@ -132,6 +139,31 @@ export class AuthService extends BaseApiService {
       finalize(() => {
         this._router.navigateByUrl('/auth');
       })
+    );
+  }
+
+  sendEmailVerification(): Observable<void> {
+    this.setAuthError(null);
+    const user = this._firebaseAuthService._auth.currentUser!;
+    const actionCodeSettings: ActionCodeSettings = {
+      url: `${APP_BASE_PATH}/home`,
+    };
+
+    return this._firebaseAuthService.sendEmailVerification(
+      user,
+      actionCodeSettings
+    );
+  }
+
+  sendPasswordResetEmail(email: string): Observable<void> {
+    this.setAuthError(null);
+    const actionCodeSettings: ActionCodeSettings = {
+      url: `${APP_BASE_PATH}/home`,
+    };
+
+    return this._firebaseAuthService.sendPasswordResetEmail(
+      email,
+      actionCodeSettings
     );
   }
 

@@ -11,7 +11,7 @@
   <form
     #formRef
     [formGroup]="form"
-    (ngSubmit)="signIn(formRef)"
+    (ngSubmit)="linkAccount(formRef)"
     class="flex flex-col gap-4 w-full items-center justify-center"
   >
     <app-auth-form class="w-full" hideEmailInput showConfirmPassword />
@@ -32,7 +32,7 @@
     }
     <a
       class="flex items-center justify-center gap-2 opacity-80 hover:text-primary hover:underline cursor-pointer"
-      routerLink="/auth/register"
+      (click)="navigateBack()"
     >
       <app-down-arrow-icon
         class="block rotate-90 opacity-80 mt-[2px]"

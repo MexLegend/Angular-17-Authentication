@@ -1,0 +1,35 @@
+<app-auth-form-container authAction="LOGIN" hideSocialAuthActions="">
+  <div class="flex flex-col gap-4 w-full items-center justify-center">
+    <h2 class="font-semibold text-2xl w-full">Check your email account</h2>
+    <p>
+      Click on the verification link that we have sent to the email address
+      <strong>{{ $userEmail() }}</strong
+      >.
+    </p>
+    <p>
+      It may take a few minutes to appear, but check your spam and promotional
+      emails folders just in case.
+    </p>
+    <p class="text-balance">
+      If you haven't received the verification email you can request a new
+      verification link by clicking
+      <a
+        class="underline cursor-pointer hover:text-primary pr-1"
+        (click)="resendEmailVerification()"
+      >
+        Resend verification link
+      </a>
+      or by contacting us directly.
+    </p>
+    <a
+      class="flex items-center justify-left w-full gap-2 opacity-80 hover:text-primary hover:underline cursor-pointer"
+      (click)="navigateBack()"
+    >
+      <app-down-arrow-icon
+        class="block rotate-90 opacity-80 mt-[2px]"
+        [size]="16"
+      />
+      Go back
+    </a>
+  </div>
+</app-auth-form-container>

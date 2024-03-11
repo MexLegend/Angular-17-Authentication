@@ -37,7 +37,7 @@ export class UserService implements OnDestroy {
           return this._firebaseStoreService.getUser(user.uid).pipe(
             map((resp) => ({
               ...resp,
-              photoURL: resp.photoURL || user.photoURL,
+              photoURL: resp?.photoURL || user.photoURL,
               providerData: user.providerData,
             }))
           );

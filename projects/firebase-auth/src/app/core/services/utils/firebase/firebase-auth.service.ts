@@ -1,13 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { FirebaseError } from '@angular/fire/app';
 import {
+  ActionCodeSettings,
   Auth,
   AuthCredential,
   AuthProvider,
   FacebookAuthProvider,
   GithubAuthProvider,
   GoogleAuthProvider,
-  OAuthProvider,
   TwitterAuthProvider,
   User,
   UserCredential,
@@ -16,6 +16,9 @@ import {
   getAdditionalUserInfo,
   linkWithCredential,
   linkWithPopup,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  sendSignInLinkToEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
   unlink,
@@ -27,6 +30,7 @@ import {
   from,
   map,
   switchMap,
+  tap,
   throwError,
 } from 'rxjs';
 import {
@@ -46,12 +50,13 @@ import {
   providedIn: 'root',
 })
 export class FirebaseAuthService {
-  private readonly _auth: Auth = inject(Auth);
+  readonly _auth: Auth = inject(Auth);
 
   readonly _$authState = authState(this._auth);
 
   public signUpWithEmailAndPassword(
-    credential: IRegisterData
+    credential: IRegisterData,
+    actionCodeSettings: ActionCodeSettings
   ): Observable<UserCredential> {
     return from(
       createUserWithEmailAndPassword(
@@ -59,7 +64,10 @@ export class FirebaseAuthService {
         credential.email,
         credential.password
       )
-    ).pipe(catchError((error) => this._catchFirebaseError(error)));
+    ).pipe(
+      tap(({ user }) => this.sendEmailVerification(user, actionCodeSettings)),
+      catchError((error) => this._catchFirebaseError(error))
+    );
   }
 
   public signInWithEmailAndPassword(
@@ -170,6 +178,33 @@ export class FirebaseAuthService {
           isNewUser,
         };
       })
+    ).pipe(catchError((error) => this._catchFirebaseAccountExistsError(error)));
+  }
+
+  public sendEmailVerification(
+    user: User,
+    actionCodeSettings: ActionCodeSettings
+  ) {
+    return from(sendEmailVerification(user, actionCodeSettings)).pipe(
+      catchError((error) => this._catchFirebaseAccountExistsError(error))
+    );
+  }
+
+  public sendPasswordResetEmail(
+    email: string,
+    actionCodeSettings: ActionCodeSettings
+  ) {
+    return from(
+      sendPasswordResetEmail(this._auth, email, actionCodeSettings)
+    ).pipe(catchError((error) => this._catchFirebaseAccountExistsError(error)));
+  }
+
+  public sendSignInLinkToEmail(
+    email: string,
+    actionCodeSettings: ActionCodeSettings
+  ) {
+    return from(
+      sendSignInLinkToEmail(this._auth, email, actionCodeSettings)
     ).pipe(catchError((error) => this._catchFirebaseAccountExistsError(error)));
   }
 

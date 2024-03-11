@@ -1,4 +1,4 @@
-import { Signal, inject } from '@angular/core';
+import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AUTH_REDIRECT } from '@core/firebase-auth/constants';
 import { AuthService } from '@core/firebase-auth/services/common/auth.service';

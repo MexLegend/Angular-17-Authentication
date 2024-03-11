@@ -44,3 +44,11 @@ export interface ILinkAccountData {
   password: string;
   confirmPassword: string;
 }
+
+export interface IResetPasswordForm {
+  email: FormControl<string>;
+}
+
+export interface IResetPasswordData {
+  email: string;
+}

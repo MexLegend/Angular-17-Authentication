@@ -12,7 +12,7 @@ import {
   NonNullableFormBuilder,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormValidators } from '@core/firebase-auth/helpers';
 import { IRegisterData, IRegisterForm } from '@core/firebase-auth/models';
 import { IHttpError } from '@core/firebase-auth/models';
@@ -22,6 +22,8 @@ import { ButtonComponent } from '@shared/firebase-auth/components/button/button.
 import { AuthFormComponent } from '../../components/auth-form/auth-form.component';
 import { ControlErrorsDirective } from '@core/firebase-auth/directives';
 import { FormSubmitDirective } from '@core/firebase-auth/directives';
+import { WebStorageService } from '@core/firebase-auth/services/utils/web-storage.service';
+import { KEY_STORAGE } from '@core/firebase-auth/constants';
 
 @Component({
   selector: 'app-register-page',
@@ -42,6 +44,8 @@ import { FormSubmitDirective } from '@core/firebase-auth/directives';
 export class RegisterPageComponent implements OnDestroy {
   private readonly _fb = inject(NonNullableFormBuilder);
   private readonly _authService = inject(AuthService);
+  private readonly _webStorageService = inject(WebStorageService);
+  private readonly _router = inject(Router);
 
   readonly $isLoading: Signal<boolean> = this._authService.$isLoadingAuth;
 
@@ -99,7 +103,13 @@ export class RegisterPageComponent implements OnDestroy {
       const registerData: IRegisterData = this.form.getRawValue();
       this._authService.signUpWithEmailAndPassword(registerData).subscribe({
         next: () => {
-          this._authService.authenticateUser();
+          this._webStorageService.useStorage('session');
+          this._webStorageService.setItem(
+            KEY_STORAGE.DATA_USER_VERIFY_EMAIL,
+            registerData.email
+          );
+
+          this._router.navigate(['/auth/verify-email']);
         },
         error: (error: IHttpError) => {
           this._authService.setAuthError(error);
