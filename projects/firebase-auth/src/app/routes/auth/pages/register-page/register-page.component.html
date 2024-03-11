@@ -1,7 +1,8 @@
 <app-auth-form-container authAction="REGISTER">
   <form
+    #formRef
     [formGroup]="form"
-    (ngSubmit)="signUp()"
+    (ngSubmit)="signUp(formRef)"
     class="flex flex-col gap-4 w-full items-center justify-center"
   >
     <section class="flex w-full flex-col gap-3">

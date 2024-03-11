@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "ngx-toastr/toastr";
+
 html,
 body {
   @apply h-screen w-screen overflow-x-hidden;
@@ -9,4 +11,22 @@ body {
 
 .container {
   @apply md:max-w-[85%];
+}
+
+#toast-container {
+  .ngx-toastr {
+    @apply shadow-md rounded-lg;
+
+    &:hover {
+      @apply shadow-lg;
+    }
+
+    &.toast-success {
+      @apply bg-teal-500 text-white;
+    }
+
+    &.toast-error {
+      @apply bg-rose-500 text-white;
+    }
+  }
 }

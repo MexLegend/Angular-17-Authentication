@@ -12,12 +12,14 @@ import {
   withFetch,
   withInterceptors,
 } from '@angular/common/http';
+import { provideToastr } from 'ngx-toastr';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes, withViewTransitions()),
     provideHttpClient(withFetch(), withInterceptors([errorHandlerInterceptor])),
     provideAnimations(),
+    provideToastr(),
     userProviders,
     firebaseProviders,
   ],

@@ -21,11 +21,13 @@ import { AuthFormComponent } from '../../components/auth-form/auth-form.componen
 import { FormValidators } from '@core/firebase-auth/helpers';
 import { ControlErrorsDirective } from '@core/firebase-auth/directives';
 import { FormSubmitDirective } from '@core/firebase-auth/directives';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IHttpError } from '@core/firebase-auth/models/http-error.interface';
 import { NgClass } from '@angular/common';
 import { AuthFormContainerComponent } from '../../components/auth-form-container/auth-form-container.component';
 import { AuthService } from '@core/firebase-auth/services/common/auth.service';
+import { WebStorageService } from '@core/firebase-auth/services/utils/web-storage.service';
+import { KEY_STORAGE } from '@core/firebase-auth/constants';
 
 @Component({
   selector: 'app-login-page',
@@ -48,11 +50,13 @@ import { AuthService } from '@core/firebase-auth/services/common/auth.service';
 export class LoginPageComponent implements OnDestroy {
   private readonly _fb = inject(NonNullableFormBuilder);
   private readonly _authService = inject(AuthService);
+  private readonly _webStorageService = inject(WebStorageService);
+  private readonly _router = inject(Router);
 
   readonly $isLoading: Signal<boolean> = this._authService.$isLoadingAuth;
+  $formError: Signal<IHttpError | null> = this._authService.$authError;
 
   form!: FormGroup<ILoginForm>;
-  formError?: IHttpError;
 
   constructor() {
     this.initForm();
@@ -87,15 +91,27 @@ export class LoginPageComponent implements OnDestroy {
     });
   }
 
-  signIn() {
+  signIn(formRef: HTMLFormElement) {
     this._authService.setAuthError(null);
     if (this.form.valid) {
       const loginData: ILoginData = this.form.getRawValue();
       this._authService.signInWithEmailAndPassword(loginData).subscribe({
-        next: () => {
+        next: ({ user }) => {
+          if (!user.emailVerified) {
+            this._webStorageService.useStorage('session');
+            this._webStorageService.setItem(
+              KEY_STORAGE.DATA_USER_VERIFY_EMAIL,
+              user.email
+            );
+            this._router.navigate(['/auth/verify-email']);
+            return;
+          }
           this._authService.authenticateUser();
         },
         error: (error: IHttpError) => {
+          this.form.controls.password.reset(undefined, { emitEvent: false });
+          const passwordInput = formRef.querySelector('input[formcontrolname="password"]') as HTMLElement;
+          passwordInput.focus();
           this._authService.setAuthError(error);
         },
       });

@@ -50,7 +50,6 @@ export class RegisterPageComponent implements OnDestroy {
   readonly $isLoading: Signal<boolean> = this._authService.$isLoadingAuth;
 
   form!: FormGroup<IRegisterForm>;
-  formError?: IHttpError;
 
   constructor() {
     this.initForm();
@@ -97,7 +96,7 @@ export class RegisterPageComponent implements OnDestroy {
     );
   }
 
-  signUp() {
+  signUp(formRef: HTMLFormElement) {
     this._authService.setAuthError(null);
     if (this.form.valid) {
       const registerData: IRegisterData = this.form.getRawValue();
@@ -112,6 +111,18 @@ export class RegisterPageComponent implements OnDestroy {
           this._router.navigate(['/auth/verify-email']);
         },
         error: (error: IHttpError) => {
+          this.form.reset(
+            {
+              ...registerData,
+              password: '',
+              confirmPassword: '',
+            },
+            { emitEvent: false }
+          );
+          const passwordInput = formRef.querySelector('input[formcontrolname="password"]') as HTMLElement;
+          console.log(passwordInput);
+          
+          passwordInput.focus();
           this._authService.setAuthError(error);
         },
       });

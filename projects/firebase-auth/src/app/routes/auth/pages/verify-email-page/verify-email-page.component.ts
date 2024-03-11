@@ -17,6 +17,7 @@ import { AuthService } from '@core/firebase-auth/services/common/auth.service';
 import { DownArrowIconComponent } from '@shared/firebase-auth/icons/down-arrow-icon.component';
 import { WebStorageService } from '@core/firebase-auth/services/utils/web-storage.service';
 import { KEY_STORAGE } from '@core/firebase-auth/constants';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-verify-email-page',
@@ -38,6 +39,7 @@ import { KEY_STORAGE } from '@core/firebase-auth/constants';
 export class VerifyEmailPageComponent {
   private readonly _authService = inject(AuthService);
   private readonly _webStorageService = inject(WebStorageService);
+  private readonly _toastrService = inject(ToastrService);
   private readonly _location = inject(Location);
 
   readonly $isLoading: Signal<boolean> = this._authService.$isLoadingAuth;
@@ -54,6 +56,8 @@ export class VerifyEmailPageComponent {
 
   resendEmailVerification() {
     this._authService.sendEmailVerification().subscribe({
+      next: () =>
+        this._toastrService.success('Please check your email.', 'Link sent!'),
       error: (error) => this._authService.setAuthError(error),
     });
   }

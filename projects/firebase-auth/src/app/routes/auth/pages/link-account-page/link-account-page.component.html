@@ -23,13 +23,6 @@
       [isLoading]="$isLoading()"
       buttonType="submit"
     />
-    @if (formError && formError.httpError === 'WRONG_CREDENTIALS') {
-    <a
-      class="opacity-80 text-primary font-medium hover:underline text-sm cursor-pointer"
-    >
-      Forgot password?
-    </a>
-    }
     <a
       class="flex items-center justify-center gap-2 opacity-80 hover:text-primary hover:underline cursor-pointer"
       (click)="navigateBack()"

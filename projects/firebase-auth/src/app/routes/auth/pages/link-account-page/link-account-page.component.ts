@@ -65,7 +65,6 @@ export class LinkAccountPageComponent implements OnDestroy {
   );
 
   form!: FormGroup<ILinkAccountForm>;
-  formError?: IHttpError;
 
   constructor() {
     this.initForm();

@@ -24,7 +24,6 @@ import {
   unlink,
 } from '@angular/fire/auth';
 import {
-  EMPTY,
   Observable,
   catchError,
   from,
@@ -33,11 +32,7 @@ import {
   tap,
   throwError,
 } from 'rxjs';
-import {
-  FIREBASE_ERROR_MESSAGES,
-  FIREBASE_WHITELIST_ERRORS,
-  PROVIDER_FIREBASE_AUTH,
-} from '@core/firebase-auth/constants';
+import { PROVIDER_FIREBASE_AUTH } from '@core/firebase-auth/constants';
 import {
   HTTP_ERROR_TYPES,
   IHttpError,
@@ -45,6 +40,7 @@ import {
   ILoginData,
   IRegisterData,
 } from '@core/firebase-auth/models';
+import { catchFirebaseError, formatErrorMessage } from '@core/firebase-auth/helpers';
 
 @Injectable({
   providedIn: 'root',
@@ -66,7 +62,7 @@ export class FirebaseAuthService {
       )
     ).pipe(
       tap(({ user }) => this.sendEmailVerification(user, actionCodeSettings)),
-      catchError((error) => this._catchFirebaseError(error))
+      catchError((error) => catchFirebaseError(error))
     );
   }
 
@@ -81,7 +77,7 @@ export class FirebaseAuthService {
       )
     ).pipe(
       catchError((error) => {
-        return this._catchFirebaseError(error);
+        return catchFirebaseError(error);
       })
     );
   }
@@ -109,7 +105,7 @@ export class FirebaseAuthService {
 
   public signOut(): Observable<void> {
     return from(this._auth.signOut()).pipe(
-      catchError((error) => this._catchFirebaseError(error))
+      catchError((error) => catchFirebaseError(error))
     );
   }
 
@@ -137,13 +133,13 @@ export class FirebaseAuthService {
   private _linkAccount(user: User, provider: AuthProvider): Observable<User> {
     return this._linkWithPopup(user, provider).pipe(
       map((resp) => resp.user),
-      catchError((error) => this._catchFirebaseError(error))
+      catchError((error) => catchFirebaseError(error))
     );
   }
 
   private _unlinkAccount(user: User, providerId: string): Observable<User> {
     return from(unlink(user, providerId)).pipe(
-      catchError((error) => this._catchFirebaseError(error))
+      catchError((error) => catchFirebaseError(error))
     );
   }
 
@@ -152,7 +148,7 @@ export class FirebaseAuthService {
     provider: AuthProvider
   ): Observable<UserCredential> {
     return from(linkWithPopup(user, provider)).pipe(
-      catchError((error) => this._catchFirebaseError(error))
+      catchError((error) => catchFirebaseError(error))
     );
   }
 
@@ -161,7 +157,7 @@ export class FirebaseAuthService {
     credential: AuthCredential
   ): Observable<UserCredential> {
     return from(linkWithCredential(user, credential)).pipe(
-      catchError((error) => this._catchFirebaseError(error))
+      catchError((error) => catchFirebaseError(error))
     );
   }
 
@@ -243,8 +239,7 @@ export class FirebaseAuthService {
 
       const formatedError: IHttpError = {
         ...error,
-        httpError: HTTP_ERROR_TYPES.BAD_REQUEST_ERROR,
-        message: this._formatErrorMessage(error.code),
+        ...formatErrorMessage(error.code),
         customData: {
           shouldRequestLinkAccount: true,
           email,
@@ -258,26 +253,6 @@ export class FirebaseAuthService {
     }
 
     // Propagate Error
-    return this._catchFirebaseError(error);
-  }
-
-  private _catchFirebaseError(error: FirebaseError): Observable<never> {
-    const formatedError: FirebaseError = {
-      ...error,
-      message: this._formatErrorMessage(error.code),
-    };
-
-    // Handle whitelist errors
-    if (FIREBASE_WHITELIST_ERRORS.includes(error.code)) {
-      return EMPTY;
-    }
-
-    return throwError(() => formatedError);
-  }
-
-  private _formatErrorMessage(errorCode: string): string {
-    return (
-      FIREBASE_ERROR_MESSAGES[errorCode] || FIREBASE_ERROR_MESSAGES['default']
-    );
+    return catchFirebaseError(error);
   }
 }
