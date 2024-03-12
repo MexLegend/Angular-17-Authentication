@@ -2,7 +2,7 @@ import { WritableSignal } from '@angular/core';
 import { IHttpError } from './http-error.interface';
 
 export interface IProduct {
-  id: number;
+  id: string;
   title: string;
   price: number;
   description: string;

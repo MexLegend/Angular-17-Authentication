@@ -81,15 +81,17 @@ export class ProductService {
   }
 
   getProductById(productId: string): Observable<IProduct> {
-    this.setIsLoading(true);
-    return this._firestoreService
-      .getOneDocument<IProduct>(NAME_FIREBASE_COLLECTION.PRODUCTS, productId)
-      .pipe(finalize(() => this.setIsLoading(false)));
+    // this.setIsLoading(true);
+    return this._firestoreService.getOneDocument<IProduct>(
+      NAME_FIREBASE_COLLECTION.PRODUCTS,
+      productId
+    );
+    // .pipe(finalize(() => this.setIsLoading(false)));
   }
 
   updateProductById(productId: string): Observable<IProduct> {
     return this.getRandomFakeStoreApiProduct().pipe(
-      switchMap(({id, ...productData}) => {
+      switchMap(({ id, ...productData }) => {
         return this._firestoreService.updateDocumentById<IProduct>(
           NAME_FIREBASE_COLLECTION.PRODUCTS,
           productId,

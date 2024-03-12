@@ -1,0 +1,40 @@
+<h2 mat-dialog-title class="p-4 px-6 text-lg font-medium line-clamp-1">
+  {{ product.title }}
+</h2>
+<mat-dialog-content class="mat-typography flex flex-col items-center gap-4">
+  <figure class="flex mx-auto relative max-w-[400px] w-auto max-h-[400px]">
+    <img
+      class="object-contain"
+      ngSrc="{{ product.image }}"
+      alt="product-view-image-{{ product.title }}"
+      priority
+      width="600"
+      height="600"
+    />
+  </figure>
+  <div class="flex gap-2 items-center">
+    <strong class="text-lg">Category: </strong>
+    <h3 class="text-lg font-medium !m-0 capitalize">{{ product.category }}</h3>
+  </div>
+  <div class="flex gap-2 items-center">
+    <strong class="text-lg">Price: </strong>
+    <h3 class="text-lg font-medium !m-0">{{ product.price | currency }}</h3>
+  </div>
+  <p class="pt-4">
+    {{ product.description }}
+  </p>
+</mat-dialog-content>
+<mat-dialog-actions
+  align="end"
+  class="flex gap-2 items-center justify-end py-4 !px-6 [&>button]:h-10 [&>button]:w-32 [&>button]:rounded-lg [&>button]:transition [&>button]:active:scale-95"
+>
+  <button class="hover:bg-slate-100" mat-button mat-dialog-close>Cancel</button>
+  <button
+    class="bg-primary text-white hover:bg-primary/70"
+    mat-button
+    [mat-dialog-close]="true"
+    cdkFocusInitial
+  >
+    Publish
+  </button>
+</mat-dialog-actions>

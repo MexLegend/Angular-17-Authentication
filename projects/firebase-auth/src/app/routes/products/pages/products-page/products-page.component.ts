@@ -12,6 +12,10 @@ import { EditIconComponent } from '@shared/firebase-auth/icons/edit-icon.compone
 import { LoadingIconComponent } from '@shared/firebase-auth/icons/loading-icon.component';
 import { TrashIconComponent } from '@shared/firebase-auth/icons/trash-icon.component';
 import { ToastrService } from 'ngx-toastr';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIcon } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
+import { ProductQuickViewComponent } from '@shared/firebase-auth/components/product-quick-view/product-quick-view.component';
 
 @Component({
   selector: 'app-products-page',
@@ -23,6 +27,8 @@ import { ToastrService } from 'ngx-toastr';
     EditIconComponent,
     CurrencyPipe,
     NgOptimizedImage,
+    MatMenuModule,
+    MatIcon,
   ],
   providers: [],
   templateUrl: './products-page.component.html',
@@ -32,6 +38,7 @@ import { ToastrService } from 'ngx-toastr';
 export class ProductsPageComponent {
   private readonly _productService = inject(ProductService);
   private readonly _toastrService = inject(ToastrService);
+  private readonly _matDialog = inject(MatDialog);
 
   readonly $products: Signal<IProduct[]> = this._productService.$products;
   readonly $isLoadingProducts: Signal<boolean> =
@@ -49,7 +56,7 @@ export class ProductsPageComponent {
   }
 
   updateProductById(productId: string) {
-    this._productService.deleteProductById(productId).subscribe({
+    this._productService.updateProductById(productId).subscribe({
       error: () => {
         this._toastrService.error(
           'Unable to complete product update. Please try again.',
@@ -59,7 +66,7 @@ export class ProductsPageComponent {
     });
   }
 
-  deleteProductById(productId: number) {
+  deleteProductById(productId: string) {
     this._productService.deleteProductById(productId.toString()).subscribe({
       error: () => {
         this._toastrService.error(
@@ -67,6 +74,18 @@ export class ProductsPageComponent {
           'Error Deleting Product!'
         );
       },
+    });
+  }
+
+  productQuickView(product: IProduct) {
+    const dialogRef = this._matDialog.open(ProductQuickViewComponent, {
+      data: product,
+      maxWidth: 800,
+      autoFocus: false,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
     });
   }
 }
