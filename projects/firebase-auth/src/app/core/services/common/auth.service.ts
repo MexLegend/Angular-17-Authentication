@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   APP_BASE_PATH,
   AUTH_REDIRECT,
+  NAME_FIREBASE_COLLECTION,
   PROVIDER_FIREBASE_AUTH,
 } from '@core/firebase-auth/constants';
 import { Observable, finalize, map, of, switchMap } from 'rxjs';
@@ -68,15 +69,19 @@ export class AuthService extends BaseApiService {
         switchMap(({ isNewUser, userCredential: { user } }) => {
           // If is new user store him in database
           if (isNewUser) {
-            return this._firebaseStoreService.addUser({
-              id: user.uid,
-              email: user.email,
-              emailVerified: user.emailVerified,
-              name: user.displayName,
-              phoneNumber: user.phoneNumber,
-              photoURL: user.photoURL,
-              providerData: user.providerData,
-            });
+            return this._firebaseStoreService.setDocumentById(
+              NAME_FIREBASE_COLLECTION.USERS,
+              user.uid,
+              {
+                id: user.uid,
+                email: user.email,
+                emailVerified: user.emailVerified,
+                name: user.displayName,
+                phoneNumber: user.phoneNumber,
+                photoURL: user.photoURL,
+                providerData: user.providerData,
+              }
+            );
           }
           return of(user);
         }),
@@ -113,12 +118,16 @@ export class AuthService extends BaseApiService {
           console.log(registerData);
 
           const { password, confirmPassword, ...userData } = registerData;
-          return this._firebaseStoreService.addUser({
-            ...userData,
-            id: uid,
-            emailVerified,
-            providerData,
-          });
+          return this._firebaseStoreService.setDocumentById<IUser>(
+            NAME_FIREBASE_COLLECTION.USERS,
+            uid,
+            {
+              ...userData,
+              id: uid,
+              emailVerified,
+              providerData,
+            }
+          );
         }),
         finalize(() => this.setIsLoading(false))
       );

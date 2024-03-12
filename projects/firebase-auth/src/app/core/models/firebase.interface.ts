@@ -11,3 +11,7 @@ export interface IFirebaseErrorCustomData {
   accessToken: string;
   providerId: string;
 }
+
+export interface IUpdateDocumentData<T> {
+  [key: string]: T;
+}

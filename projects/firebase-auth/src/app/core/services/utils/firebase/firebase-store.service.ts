@@ -1,15 +1,17 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable, catchError, from } from 'rxjs';
 import {
+  addDoc,
+  collection,
+  collectionData,
+  deleteDoc,
   doc,
   docData,
-  DocumentData,
   Firestore,
   setDoc,
   updateDoc,
 } from '@angular/fire/firestore';
-import { IUser } from '@core/firebase-auth/models';
-import { NAME_FIREBASE_COLLECTION } from '@core/firebase-auth/constants/firebase.constant';
+import { IUpdateDocumentData } from '@core/firebase-auth/models';
 import { catchFirebaseError } from '@core/firebase-auth/helpers';
 
 @Injectable({
@@ -18,9 +20,25 @@ import { catchFirebaseError } from '@core/firebase-auth/helpers';
 export class FirebaseStoreService {
   private readonly _fireStore: Firestore = inject(Firestore);
 
-  public addUser(user: IUser): Observable<any> {
-    const ref = doc(this._fireStore, NAME_FIREBASE_COLLECTION.USERS, user.id);
-    return from(setDoc(ref, { ...user })).pipe(
+  public addDocument<T>(
+    collectionName: string,
+    data: IUpdateDocumentData<T>
+  ): Observable<T> {
+    const collectionRef = collection(this._fireStore, collectionName);
+    return from(addDoc(collectionRef, data) as Promise<T>).pipe(
+      catchError((error) => {
+        return catchFirebaseError(error);
+      })
+    );
+  }
+
+  public setDocumentById<T>(
+    collectionName: string,
+    id: string,
+    data: IUpdateDocumentData<T>
+  ): Observable<T> {
+    const ref = doc(this._fireStore, collectionName, id);
+    return from(setDoc(ref, data) as Promise<T>).pipe(
       catchError((error) => {
         return catchFirebaseError(error);
       })
@@ -34,13 +52,28 @@ export class FirebaseStoreService {
     );
   }
 
+  public getAllDocuments<T>(collectionName: string): Observable<T> {
+    const collectionRef = collection(this._fireStore, collectionName);
+    return collectionData(collectionRef) as Observable<T>;
+  }
+
   public updateDocumentById<T>(
     collectionName: string,
     id: string,
-    data: T
+    data: IUpdateDocumentData<T>
   ): Observable<any> {
     const ref = doc(this._fireStore, collectionName, id);
-    return from(updateDoc<DocumentData>(ref, data)).pipe(
+    return from(updateDoc(ref, data)).pipe(
+      catchError((error) => catchFirebaseError(error))
+    );
+  }
+
+  public deleteDocumentById(
+    collectionName: string,
+    id: string
+  ): Observable<void> {
+    const ref = doc(this._fireStore, collectionName, id);
+    return from(deleteDoc(ref)).pipe(
       catchError((error) => catchFirebaseError(error))
     );
   }

@@ -6,7 +6,7 @@ import {
   IProduct,
   IProductState,
 } from '@core/firebase-auth/models';
-import { Observable, finalize, map, of } from 'rxjs';
+import { EMPTY, Observable, finalize, map, of } from 'rxjs';
 import {
   AngularFirestore,
   AngularFirestoreCollection,
@@ -109,15 +109,7 @@ export class ProductService {
     return collectionData(this._collection) as Observable<IProduct[]>;
   }
 
-  create(tutorial: IProduct): any {
-    return this.productsRef.add({ ...tutorial });
-  }
-
-  update(id: string, data: any): Promise<void> {
-    return this.productsRef.doc(id).update(data);
-  }
-
-  delete(id: string): Promise<void> {
-    return this.productsRef.doc(id).delete();
+  delete(id: string): void {
+    // return this.productsRef.doc(id).delete();
   }
 }

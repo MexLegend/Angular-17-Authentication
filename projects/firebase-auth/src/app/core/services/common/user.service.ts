@@ -1,4 +1,5 @@
 import { Injectable, OnDestroy, inject, signal } from '@angular/core';
+import { NAME_FIREBASE_COLLECTION } from '@core/firebase-auth/constants';
 import { IUser, IUserState } from '@core/firebase-auth/models';
 import { FirebaseAuthService } from '@core/firebase-auth/services/utils/firebase/firebase-auth.service';
 import { FirebaseStoreService } from '@core/firebase-auth/services/utils/firebase/firebase-store.service';
@@ -34,13 +35,15 @@ export class UserService implements OnDestroy {
           if (!user?.uid) {
             return of(null);
           }
-          return this._firebaseStoreService.getUser(user.uid).pipe(
-            map((resp) => ({
-              ...resp,
-              photoURL: resp?.photoURL || user.photoURL,
-              providerData: user.providerData,
-            }))
-          );
+          return this._firebaseStoreService
+            .getOneDocument<IUser>(NAME_FIREBASE_COLLECTION.USERS, user.uid)
+            .pipe(
+              map((resp) => ({
+                ...resp,
+                photoURL: resp?.photoURL || user.photoURL,
+                providerData: user.providerData,
+              }))
+            );
         })
       )
       .subscribe({
