@@ -4,6 +4,7 @@
   }}"
   [type]="buttonType"
   [disabled]="disableButton || isLoading"
+  (click)="clickAction.emit($event)"
 >
   @if (isLoading) {
   <app-loading-icon class="animate-spin" />

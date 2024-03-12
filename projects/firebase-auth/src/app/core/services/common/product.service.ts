@@ -1,115 +1,118 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
-import { FAKE_API_URL } from '@core/firebase-auth/constants';
+import { Observable, finalize, switchMap } from 'rxjs';
+import { FirebaseStoreService } from '@core/firebase-auth/services/utils/firebase/firebase-store.service';
+import {
+  FAKE_API_URL,
+  NAME_FIREBASE_COLLECTION,
+} from '@core/firebase-auth/constants';
 import {
   IHttpError,
   IProduct,
   IProductState,
 } from '@core/firebase-auth/models';
-import { EMPTY, Observable, finalize, map, of } from 'rxjs';
-import {
-  AngularFirestore,
-  AngularFirestoreCollection,
-} from '@angular/fire/compat/firestore';
-import { Firestore, collection, collectionData } from '@angular/fire/firestore';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-const PATH = 'products';
 @Injectable({
   providedIn: 'root',
 })
 export class ProductService {
   private readonly _http = inject(HttpClient);
+  private readonly _firestoreService = inject(FirebaseStoreService);
 
-  private _firestore = inject(Firestore);
-  private _collection = collection(this._firestore, PATH);
-
+  // State
   private readonly _productState: IProductState = {
     $products: signal<IProduct[]>([]),
-    $isLoadingProduct: signal<boolean>(false),
-    $productError: signal<IHttpError | null>(null),
+    $isLoadingProducts: signal<boolean>(false),
+    $productsError: signal<IHttpError | null>(null),
   } as const;
 
+  // Selectors
   readonly $products = this._productState.$products.asReadonly();
   readonly $isLoadingProduct =
-    this._productState.$isLoadingProduct.asReadonly();
-  readonly $productError = this._productState.$productError.asReadonly();
+    this._productState.$isLoadingProducts.asReadonly();
+  readonly $productError = this._productState.$productsError.asReadonly();
+
+  // Reducers
+  constructor() {
+    this.getProducts();
+  }
 
   setIsLoading(isLoading: boolean): void {
-    this._productState.$isLoadingProduct.set(isLoading);
+    this._productState.$isLoadingProducts.set(isLoading);
   }
 
   setProductError(error: IHttpError): void {
-    this._productState.$productError.set(error);
+    this._productState.$productsError.set(error);
   }
 
-  setProducts(products: IProduct[]): void {
+  private _setProducts(products: IProduct[]): void {
     this._productState.$products.set(products);
   }
 
-  getRamdom(maxNumber: number = 20) {
-    return Math.floor(Math.random() * maxNumber);
-  }
-
-  getProductsFaker(): Observable<IProduct[]> {
-    this.setIsLoading(true);
-    // return of<IProduct[]>([
-    //   {
-    //     id: 1,
-    //     title: 'test_1',
-    //     price: 542,
-    //     description: '',
-    //     category: '',
-    //     image: '',
-    //     rating: {
-    //       rate: 0,
-    //       count: 4,
-    //     },
-    //   },
-    //   {
-    //     id: 2,
-    //     title: 'zapatos',
-    //     price: 1248,
-    //     description: '',
-    //     category: '',
-    //     image: '',
-    //     rating: {
-    //       rate: 0,
-    //       count: 4,
-    //     },
-    //   },
-    //   {
-    //     id: 3,
-    //     title: 'pantalon',
-    //     price: 320,
-    //     description: '',
-    //     category: '',
-    //     image: '',
-    //     rating: {
-    //       rate: 0,
-    //       count: 4,
-    //     },
-    //   },
-    // ]).pipe(finalize(() => this.setIsLoading(false)));
-    return this._http.get(FAKE_API_URL + '/' + this.getRamdom()).pipe(
-      map((resp) => {
-        console.log(resp);
-        return [resp] as IProduct[];
+  createdProduct(): Observable<IProduct> {
+    return this.getRandomFakeStoreApiProduct().pipe(
+      switchMap(({ id, ...productData }) => {
+        return this._firestoreService.addDocument<IProduct>(
+          NAME_FIREBASE_COLLECTION.PRODUCTS,
+          productData
+        );
       })
     );
-    // .pipe(finalize(() => this.setIsLoading(false)));
   }
 
-  getProductByFaker(): Observable<IProduct> {
+  getProducts(): void {
     this.setIsLoading(true);
-    return this._http.get<IProduct>(FAKE_API_URL + '/' + this.getRamdom());
-    // .pipe(finalize(() => this.setIsLoading(false)));
+    this._firestoreService
+      .getAllDocuments<IProduct[]>(NAME_FIREBASE_COLLECTION.PRODUCTS)
+      .pipe(takeUntilDestroyed())
+      .subscribe({
+        next: (products) => {
+          console.log(products);
+
+          this.setIsLoading(false);
+          this._setProducts(products);
+        },
+        error: (error) => {
+          this.setIsLoading(false);
+          this.setProductError(error);
+        },
+      });
   }
 
-  getProducts() {
-    return collectionData(this._collection) as Observable<IProduct[]>;
+  getProductById(productId: string): Observable<IProduct> {
+    this.setIsLoading(true);
+    return this._firestoreService
+      .getOneDocument<IProduct>(NAME_FIREBASE_COLLECTION.PRODUCTS, productId)
+      .pipe(finalize(() => this.setIsLoading(false)));
   }
 
-  delete(id: string): void {
-    // return this.productsRef.doc(id).delete();
+  updateProductById(productId: string): Observable<IProduct> {
+    return this.getRandomFakeStoreApiProduct().pipe(
+      switchMap(({id, ...productData}) => {
+        return this._firestoreService.updateDocumentById<IProduct>(
+          NAME_FIREBASE_COLLECTION.PRODUCTS,
+          productId,
+          productData
+        );
+      })
+    );
+  }
+
+  deleteProductById(productId: string): Observable<void> {
+    return this._firestoreService.deleteDocumentById(
+      NAME_FIREBASE_COLLECTION.PRODUCTS,
+      productId
+    );
+  }
+
+  getRandomFakeStoreApiProduct(): Observable<IProduct> {
+    return this._http.get<IProduct>(
+      `${FAKE_API_URL}/${this.getRamdomNumber()}`
+    );
+  }
+
+  getRamdomNumber(maxNumber: number = 20) {
+    return Math.floor(Math.random() * maxNumber);
   }
 }

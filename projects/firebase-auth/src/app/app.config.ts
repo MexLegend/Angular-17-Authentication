@@ -3,10 +3,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { errorHandlerInterceptor } from '@core/firebase-auth/interceptors';
 import { routes } from './app.routes';
-import {
-  userProviders,
-  firebaseProviders,
-} from '@core/firebase-auth/providers';
+import { firebaseProviders } from '@core/firebase-auth/providers';
 import {
   provideHttpClient,
   withFetch,
@@ -20,7 +17,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch(), withInterceptors([errorHandlerInterceptor])),
     provideAnimations(),
     provideToastr(),
-    userProviders,
     firebaseProviders,
   ],
 };

@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, inject, signal } from '@angular/core';
 
 import { ILoginData, IRegisterData, IUser } from '@core/firebase-auth/models';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,11 +16,11 @@ import { FirebaseAuthService } from '@core/firebase-auth/services/utils/firebase
 import { FirebaseStoreService } from '@core/firebase-auth/services/utils/firebase/firebase-store.service';
 import {
   ActionCodeSettings,
-  AuthCredential,
   OAuthProvider,
   User,
   UserCredential,
 } from '@angular/fire/auth';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -28,16 +28,21 @@ import {
 export class AuthService extends BaseApiService {
   private readonly _router = inject(Router);
   private readonly _activatedRoute = inject(ActivatedRoute);
+  private readonly _destroyRef = inject(DestroyRef);
 
   private readonly _firebaseAuthService = inject(FirebaseAuthService);
   private readonly _firebaseStoreService = inject(FirebaseStoreService);
 
+  // State
   private readonly _authState: IAuthState = {
+    isLoggedIn$: of(false),
     $isLoadingAuth: signal<boolean>(false),
     $authError: signal<IHttpError | null>(null),
   } as const;
 
+  // Selectors
   readonly isLoggedIn$ = this._firebaseAuthService._$authState.pipe(
+    takeUntilDestroyed(this._destroyRef),
     map((res) => !!res && res.emailVerified)
   );
   readonly $isLoadingAuth = this._authState.$isLoadingAuth.asReadonly();
@@ -115,8 +120,6 @@ export class AuthService extends BaseApiService {
       .pipe(
         // Store user in database
         switchMap(({ user: { uid, emailVerified, providerData } }) => {
-          console.log(registerData);
-
           const { password, confirmPassword, ...userData } = registerData;
           return this._firebaseStoreService.setDocumentById<IUser>(
             NAME_FIREBASE_COLLECTION.USERS,

@@ -119,9 +119,10 @@ export class RegisterPageComponent implements OnDestroy {
             },
             { emitEvent: false }
           );
-          const passwordInput = formRef.querySelector('input[formcontrolname="password"]') as HTMLElement;
-          console.log(passwordInput);
-          
+          const passwordInput = formRef.querySelector(
+            'input[formcontrolname="password"]'
+          ) as HTMLElement;
+
           passwordInput.focus();
           this._authService.setAuthError(error);
         },

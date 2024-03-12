@@ -22,7 +22,7 @@ export class FirebaseStoreService {
 
   public addDocument<T>(
     collectionName: string,
-    data: IUpdateDocumentData<T>
+    data: IUpdateDocumentData<any>
   ): Observable<T> {
     const collectionRef = collection(this._fireStore, collectionName);
     return from(addDoc(collectionRef, data) as Promise<T>).pipe(
@@ -35,7 +35,7 @@ export class FirebaseStoreService {
   public setDocumentById<T>(
     collectionName: string,
     id: string,
-    data: IUpdateDocumentData<T>
+    data: IUpdateDocumentData<any>
   ): Observable<T> {
     const ref = doc(this._fireStore, collectionName, id);
     return from(setDoc(ref, data) as Promise<T>).pipe(
@@ -47,23 +47,23 @@ export class FirebaseStoreService {
 
   public getOneDocument<T>(collectionName: string, id: string): Observable<T> {
     const ref = doc(this._fireStore, collectionName, id);
-    return (docData(ref) as Observable<T>).pipe(
+    return (docData(ref, { idField: 'id' }) as Observable<T>).pipe(
       catchError((error) => catchFirebaseError(error))
     );
   }
 
   public getAllDocuments<T>(collectionName: string): Observable<T> {
     const collectionRef = collection(this._fireStore, collectionName);
-    return collectionData(collectionRef) as Observable<T>;
+    return collectionData(collectionRef, { idField: 'id' }) as Observable<T>;
   }
 
   public updateDocumentById<T>(
     collectionName: string,
     id: string,
-    data: IUpdateDocumentData<T>
-  ): Observable<any> {
+    data: IUpdateDocumentData<any>
+  ): Observable<T> {
     const ref = doc(this._fireStore, collectionName, id);
-    return from(updateDoc(ref, data)).pipe(
+    return from(updateDoc(ref, data) as Promise<T>).pipe(
       catchError((error) => catchFirebaseError(error))
     );
   }

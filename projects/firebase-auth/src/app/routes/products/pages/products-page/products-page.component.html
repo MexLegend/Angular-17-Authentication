@@ -1,18 +1,80 @@
-<table>
-  <thead>
-    <th>Id</th>
-    <th>Titulo</th>
-    <th>Precio</th>
-  </thead>
-  <tbody>
-    @for (product of $products(); track product.id) {
-    <tr>
-      <td>{{ product.id }}</td>
-      <td>{{ product.title }}</td>
-      <td>${{ product.price }}</td>
-    </tr>
-    }
-  </tbody>
-</table>
+<section class="flex flex-col gap-8 items-center justify-center mt-8 w-full">
+  <div class="flex w-full items-center justify-end">
+    <app-button label="Create product" (clickAction)="createProduct()">
+      <span class="text-3xl leading-none font-medium pb-1">+</span>
+    </app-button>
+  </div>
+  <article
+    class="flex flex-col gap-6 rounded-2xl shadow-lg p-6 border items-center w-full"
+  >
+    <table class="w-full h-full table-auto">
+      <thead class="h-10 border-b [&>th]:text-left">
+        <th>Id</th>
+        <th>Image</th>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Price</th>
+        <th>Actions</th>
+      </thead>
+      <tbody class="[&>tr]:text-left [&>tr]:h-14">
+        @if (!$isLoadingProducts()) { 
+          @for (product of $products(); track
+          product.id) {
+          <tr>
+            <td class="w-20">{{ product.id }}</td>
+            <td>
+              <figure class="relative size-12 rounded-lg">
+                <img 
+                  class="object-contain" 
+                  ngSrc="{{product.image}}" 
+                  alt="product-img-{{product.title}}" 
+                  priority 
+                  fill
+                >
+              </figure>
+            </td>
+            <td>{{ product.title }}</td>
+            <td>{{ product.category }}</td>
+            <td>{{ product.price | currency }}</td>
+            <td>
+              <div class="flex justify-center items-center">
+                <button class="flex items-center justify-center p-2 rounded-full transition duration-200 hover:bg-primary hover:text-white active:scale-95">
+                  <app-edit-icon />
+                </button>
+                <button 
+                  class="flex items-center justify-center p-2 rounded-full transition duration-200 hover:bg-primary hover:text-white active:scale-95"
+                  (click)="deleteProductById(product.id)"
+                  >
+                  <app-trash-icon />
+                </button>
+              </div>
+            </td>
+          </tr>
+          } @empty {
+          <tr class="h-36 text-center">
+            <td colspan="6">
+              <div class="flex flex-col items-center justify-center gap-4 w-full">
+                <p>The product list is empty</p>
+                <app-button
+                  label="Create product"
+                  (clickAction)="createProduct()"
+                />
+              </div>
+            </td>
+          </tr>
+          } 
+        } @else {
+        <tr class="!h-36 text-center">
+          <td colspan="6">
+            <div class="flex flex-col items-center justify-center w-full">
+              <app-loading-icon class="animate-spin" [size]="40" />
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </article>
+</section>
 
 <button (click)="createProduct()"></button>

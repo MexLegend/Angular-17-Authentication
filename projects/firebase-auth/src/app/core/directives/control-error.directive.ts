@@ -1,5 +1,6 @@
 import {
   ComponentRef,
+  DestroyRef,
   Directive,
   ElementRef,
   OnInit,
@@ -7,23 +8,22 @@ import {
   inject,
 } from '@angular/core';
 import { NgControl } from '@angular/forms';
-import { EMPTY, fromEvent, map, merge, takeUntil } from 'rxjs';
+import { EMPTY, fromEvent, map, merge } from 'rxjs';
 import { ControlErrorComponent } from '@shared/firebase-auth/components/control-error/control-error.component';
 import { getFormControlError } from '@core/firebase-auth/helpers';
 import { FormSubmitDirective } from './form-submit.directive';
-import { AutoDestroyService } from '@core/firebase-auth/services/utils/auto-destroy.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Directive({
   selector: '[formControl], [formControlName]',
   standalone: true,
-  providers: [AutoDestroyService],
 })
 export class ControlErrorsDirective implements OnInit {
   private readonly _ngControl = inject(NgControl);
   private readonly _form = inject(FormSubmitDirective, { optional: true });
-  private readonly _autoDestroyService = inject(AutoDestroyService);
   private readonly _elementRef: ElementRef<HTMLElement> = inject(ElementRef);
   private readonly _vcr = inject(ViewContainerRef);
+  private readonly _destroyRef = inject(DestroyRef);
 
   private _componentRef!: ComponentRef<ControlErrorComponent>;
 
@@ -39,7 +39,7 @@ export class ControlErrorsDirective implements OnInit {
       this._blurEvent$.pipe(map(() => 'blur')),
       this._ngControl.statusChanges!.pipe(map(() => 'status'))
     )
-      .pipe(takeUntil(this._autoDestroyService))
+      .pipe(takeUntilDestroyed(this._destroyRef))
       .subscribe((eventType) => {
         const errorControl = getFormControlError(this._ngControl.control!);
         this.setError(errorControl);

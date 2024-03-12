@@ -6,6 +6,7 @@ import {
 
 export const enum NAME_FIREBASE_COLLECTION {
   USERS = 'users',
+  PRODUCTS = 'products',
 }
 
 export type PROVIDER_FIREBASE_AUTH =

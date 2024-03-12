@@ -1,2 +1,2 @@
-export * from './user.provider';
+export * from './auth.provider';
 export * from './firebase.provider';

@@ -16,6 +16,6 @@ export interface IProduct {
 
 export interface IProductState {
   $products: WritableSignal<IProduct[]>;
-  $isLoadingProduct: WritableSignal<boolean>;
-  $productError: WritableSignal<IHttpError | null>;
+  $isLoadingProducts: WritableSignal<boolean>;
+  $productsError: WritableSignal<IHttpError | null>;
 }

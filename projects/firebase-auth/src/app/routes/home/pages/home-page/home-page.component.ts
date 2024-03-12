@@ -7,7 +7,12 @@ import {
 } from '@angular/core';
 import { UserService } from '@core/firebase-auth/services/common/user.service';
 import { IUser } from '@core/firebase-auth/models/user.interface';
-import { AsyncPipe, JsonPipe, NgClass, NgOptimizedImage } from '@angular/common';
+import {
+  AsyncPipe,
+  JsonPipe,
+  NgClass,
+  NgOptimizedImage,
+} from '@angular/common';
 import { LoadingIconComponent } from '@shared/firebase-auth/icons/loading-icon.component';
 import { GoogleIconComponent } from '@shared/firebase-auth/icons/google-icon.component';
 import { FacebookBlueIconComponent } from '@shared/firebase-auth/icons/facebook-blue-icon.component';
@@ -36,7 +41,7 @@ import { UserAvatarComponent } from '@shared/firebase-auth/components/user-avata
     FacebookBlueIconComponent,
     TwitterBlueIconComponent,
     GithubIconComponent,
-    NgOptimizedImage
+    NgOptimizedImage,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.scss',

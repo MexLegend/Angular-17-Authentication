@@ -1,7 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   Input,
+  Output,
   booleanAttribute,
 } from '@angular/core';
 import { LoadingIconComponent } from '@shared/firebase-auth/icons/loading-icon.component';
@@ -22,4 +24,5 @@ export class ButtonComponent {
   @Input() customClasses?: string;
   @Input({ transform: booleanAttribute }) disableButton = false;
   @Input({ transform: booleanAttribute }) isLoading = false;
+  @Output() clickAction: EventEmitter<MouseEvent> = new EventEmitter();
 }

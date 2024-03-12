@@ -1,8 +1,10 @@
 import { FormControl } from '@angular/forms';
 import { WritableSignal } from '@angular/core';
 import { IHttpError } from '@core/firebase-auth/models';
+import { Observable } from 'rxjs';
 
 export interface IAuthState {
+  isLoggedIn$: Observable<boolean>;
   $isLoadingAuth: WritableSignal<boolean>;
   $authError: WritableSignal<IHttpError | null>;
 }

@@ -1,40 +1,71 @@
-import { Component, OnInit, Signal, inject } from '@angular/core';
+import { CurrencyPipe, NgOptimizedImage } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Signal,
+  inject,
+} from '@angular/core';
 import { IProduct } from '@core/firebase-auth/models';
 import { ProductService } from '@core/firebase-auth/services/common/product.service';
+import { ButtonComponent } from '@shared/firebase-auth/components/button/button.component';
+import { EditIconComponent } from '@shared/firebase-auth/icons/edit-icon.component';
+import { LoadingIconComponent } from '@shared/firebase-auth/icons/loading-icon.component';
+import { TrashIconComponent } from '@shared/firebase-auth/icons/trash-icon.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-products-page',
   standalone: true,
-  imports: [],
+  imports: [
+    ButtonComponent,
+    LoadingIconComponent,
+    TrashIconComponent,
+    EditIconComponent,
+    CurrencyPipe,
+    NgOptimizedImage,
+  ],
+  providers: [],
   templateUrl: './products-page.component.html',
   styleUrl: './products-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductsPageComponent implements OnInit {
+export class ProductsPageComponent {
   private readonly _productService = inject(ProductService);
+  private readonly _toastrService = inject(ToastrService);
 
   readonly $products: Signal<IProduct[]> = this._productService.$products;
+  readonly $isLoadingProducts: Signal<boolean> =
+    this._productService.$isLoadingProduct;
 
-  ngOnInit(): void {
-    this.getProducts();
-  }
-
-  getProducts() {
-    this._productService.getProductsFaker().subscribe({
-      next: (products) => {
-        console.log({ products });
-
-        return this._productService.setProducts(products);
+  createProduct() {
+    this._productService.createdProduct().subscribe({
+      error: () => {
+        this._toastrService.error(
+          'Unable to complete product creation. Please try again.',
+          'Error Creating Product!'
+        );
       },
-      error: (error) => this._productService.setProductError(error),
     });
   }
 
-  createProduct() {
-    this._productService.getProductByFaker().subscribe({
-      next: (product) => {
-        console.log({ product });
+  updateProductById(productId: string) {
+    this._productService.deleteProductById(productId).subscribe({
+      error: () => {
+        this._toastrService.error(
+          'Unable to complete product update. Please try again.',
+          'Error Updating Product!'
+        );
+      },
+    });
+  }
 
-        // return this._productService.setProducts(products);
+  deleteProductById(productId: number) {
+    this._productService.deleteProductById(productId.toString()).subscribe({
+      error: () => {
+        this._toastrService.error(
+          'Unable to complete product deletion. Please try again.',
+          'Error Deleting Product!'
+        );
       },
     });
   }

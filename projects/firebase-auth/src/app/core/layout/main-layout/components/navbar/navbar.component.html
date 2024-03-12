@@ -1,30 +1,40 @@
 <nav
   #navbar
-  class="z-50 fixed flex w-full h-20 border-b border-b-transparent transition-all duration-200 bg-slate-100 border-b-slate-200"
+  class="z-50 fixed flex w-full h-20 border-b border-b-transparent transition-all duration-200 bg-primary border-b-slate-200"
   [ngClass]="{
     'bg-white/80 backdrop-blur-sm': isScrolling()
   }"
 >
   <div class="flex justify-between items-center container mx-auto">
-    <h1 class="text-2xl font-bold">
-      <span class="text-white font-bold bg-yellow-500 py-1 px-4 rounded-lg"
+    <h1 class="text-2xl font-bold text-white">
+      <span class="text-primary font-bold bg-white py-1 px-4 rounded-lg"
         >AF</span
       >
       AngFire
     </h1>
-    <ul class="flex items-center justify-center gap-6">
+    <ul class="flex items-center justify-center gap-6 text-white">
       <li>
-        <a routerLink="/home" routerLinkActive="text-primary">Home</a>
+        <a routerLink="/home" routerLinkActive="font-semibold">Home</a>
       </li>
       <li>
-        <a routerLink="/products" routerLinkActive="text-primary">Products</a>
+        <a routerLink="/products" routerLinkActive="font-semibold">Products</a>
       </li>
     </ul>
     <div class="flex gap-1">
       @if (userData()) {
-      <app-button class="ml-2" label="LogOut" (click)="signOut()" />
+      <app-button
+        class="ml-2"
+        customClasses="bg-white hover:bg-slate-50 !text-primary"
+        label="LogOut"
+        (click)="signOut()"
+      />
       } @else {
-      <app-button class="ml-2" label="Login" routerLink="auth">
+      <app-button
+        class="ml-2"
+        customClasses="bg-white hover:bg-slate-50 !text-primary"
+        label="Login"
+        routerLink="auth"
+      >
         <app-logout-icon [size]="22" />
       </app-button>
       }
