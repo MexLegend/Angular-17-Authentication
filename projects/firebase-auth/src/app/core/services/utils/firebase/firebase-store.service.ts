@@ -3,6 +3,7 @@ import { Observable, catchError, from } from 'rxjs';
 import {
   doc,
   docData,
+  DocumentData,
   Firestore,
   setDoc,
   updateDoc,
@@ -26,16 +27,20 @@ export class FirebaseStoreService {
     );
   }
 
-  public getUser(userId: string): Observable<IUser> {
-    const ref = doc(this._fireStore, NAME_FIREBASE_COLLECTION.USERS, userId);
-    return (docData(ref) as Observable<IUser>).pipe(
+  public getOneDocument<T>(collectionName: string, id: string): Observable<T> {
+    const ref = doc(this._fireStore, collectionName, id);
+    return (docData(ref) as Observable<T>).pipe(
       catchError((error) => catchFirebaseError(error))
     );
   }
 
-  public updateUser(user: IUser): Observable<any> {
-    const ref = doc(this._fireStore, NAME_FIREBASE_COLLECTION.USERS, user.id);
-    return from(updateDoc(ref, { ...user })).pipe(
+  public updateDocumentById<T>(
+    collectionName: string,
+    id: string,
+    data: T
+  ): Observable<any> {
+    const ref = doc(this._fireStore, collectionName, id);
+    return from(updateDoc<DocumentData>(ref, data)).pipe(
       catchError((error) => catchFirebaseError(error))
     );
   }

@@ -6,3 +6,4 @@ export * from './firebase.interface';
 export * from './storage-service.class';
 export * from './storage.interface';
 export * from './user.interface';
+export * from './product.interface';

@@ -12,6 +12,14 @@
       >
       AngFire
     </h1>
+    <ul class="flex items-center justify-center gap-6">
+      <li>
+        <a routerLink="/home" routerLinkActive="text-primary">Home</a>
+      </li>
+      <li>
+        <a routerLink="/products" routerLinkActive="text-primary">Products</a>
+      </li>
+    </ul>
     <div class="flex gap-1">
       @if (userData()) {
       <app-button class="ml-2" label="LogOut" (click)="signOut()" />

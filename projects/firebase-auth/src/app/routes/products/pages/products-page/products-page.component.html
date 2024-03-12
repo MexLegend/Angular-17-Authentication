@@ -1,0 +1,18 @@
+<table>
+  <thead>
+    <th>Id</th>
+    <th>Titulo</th>
+    <th>Precio</th>
+  </thead>
+  <tbody>
+    @for (product of $products(); track product.id) {
+    <tr>
+      <td>{{ product.id }}</td>
+      <td>{{ product.title }}</td>
+      <td>${{ product.price }}</td>
+    </tr>
+    }
+  </tbody>
+</table>
+
+<button (click)="createProduct()"></button>

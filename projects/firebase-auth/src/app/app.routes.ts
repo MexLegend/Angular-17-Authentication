@@ -9,7 +9,7 @@ export const routes: Routes = [
     redirectTo: 'home',
   },
   {
-    path: 'home',
+    path: '',
     canActivate: [loggedGuard],
     loadComponent: () =>
       import('./core/layout/main-layout/main-layout.component').then(
@@ -17,12 +17,30 @@ export const routes: Routes = [
       ),
     children: [
       {
-        path: '',
-        loadChildren: () =>
-          import('./routes/home/home.routes').then((r) => r.HOME_ROUTES),
+        path: 'home',
+        children: [
+          {
+            path: '',
+            loadChildren: () =>
+              import('./routes/home/home.routes').then((r) => r.HOME_ROUTES),
+          },
+        ],
+      },
+      {
+        path: 'products',
+        children: [
+          {
+            path: '',
+            loadChildren: () =>
+              import('./routes/products/product.routes').then(
+                (r) => r.PRODUCT_ROUTES
+              ),
+          },
+        ],
       },
     ],
   },
+
   {
     path: 'auth',
     canActivate: [unloggedGuard],
