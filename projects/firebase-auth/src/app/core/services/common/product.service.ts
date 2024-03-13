@@ -82,7 +82,7 @@ export class ProductService {
 
   getProductById(productId: string): Observable<IProduct> {
     // this.setIsLoading(true);
-    return this._firestoreService.getOneDocument<IProduct>(
+    return this._firestoreService.getOneDocumentById<IProduct>(
       NAME_FIREBASE_COLLECTION.PRODUCTS,
       productId
     );

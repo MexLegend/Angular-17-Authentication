@@ -6,6 +6,8 @@ export interface IUserState {
   $isLoadingUser: WritableSignal<boolean>;
 }
 
+export type LoginMethod = "CREDENTIALS" | "PROVIDER";
+
 export interface IUser {
   id: string;
   email: string | null;
@@ -15,6 +17,7 @@ export interface IUser {
   photoURL?: string | null;
   address?: string | null;
   providerData: UserInfo[];
+  loginMethod: LoginMethod;
 }
 
 export interface IUserAvatar {

@@ -38,7 +38,7 @@ export class UserService {
             return of(null);
           }
           return this._firebaseStoreService
-            .getOneDocument<IUser>(NAME_FIREBASE_COLLECTION.USERS, user.uid)
+            .getOneDocumentById<IUser>(NAME_FIREBASE_COLLECTION.USERS, user.uid)
             .pipe(
               map((resp) => ({
                 ...resp,

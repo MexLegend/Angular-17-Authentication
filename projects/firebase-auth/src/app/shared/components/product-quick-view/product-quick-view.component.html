@@ -32,8 +32,9 @@
   <button
     class="bg-primary text-white hover:bg-primary/70"
     mat-button
-    [mat-dialog-close]="true"
+
     cdkFocusInitial
+    (click)="publish()"
   >
     Publish
   </button>

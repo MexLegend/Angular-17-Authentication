@@ -40,7 +40,10 @@ import {
   ILoginData,
   IRegisterData,
 } from '@core/firebase-auth/models';
-import { catchFirebaseError, formatErrorMessage } from '@core/firebase-auth/helpers';
+import {
+  catchFirebaseError,
+  formatErrorMessage,
+} from '@core/firebase-auth/helpers';
 
 @Injectable({
   providedIn: 'root',

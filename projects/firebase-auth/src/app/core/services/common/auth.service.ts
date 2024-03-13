@@ -43,7 +43,9 @@ export class AuthService extends BaseApiService {
   // Selectors
   readonly isLoggedIn$ = this._firebaseAuthService._$authState.pipe(
     takeUntilDestroyed(this._destroyRef),
-    map((res) => !!res && res.emailVerified)
+    map((res) =>{
+      return !!res && (res.providerData.some(provider => provider.providerId !== 'password') || res.emailVerified)
+    })
   );
   readonly $isLoadingAuth = this._authState.$isLoadingAuth.asReadonly();
   readonly $authError = this._authState.$authError.asReadonly();
@@ -74,17 +76,15 @@ export class AuthService extends BaseApiService {
         switchMap(({ isNewUser, userCredential: { user } }) => {
           // If is new user store him in database
           if (isNewUser) {
-            return this._firebaseStoreService.setDocumentById(
+            return this._firebaseStoreService.addDocument<IUser>(
               NAME_FIREBASE_COLLECTION.USERS,
-              user.uid,
               {
-                id: user.uid,
                 email: user.email,
                 emailVerified: user.emailVerified,
                 name: user.displayName,
                 phoneNumber: user.phoneNumber,
                 photoURL: user.photoURL,
-                providerData: user.providerData,
+                loginMethod: 'PROVIDER'
               }
             );
           }
@@ -119,16 +119,15 @@ export class AuthService extends BaseApiService {
       .signUpWithEmailAndPassword(registerData, actionCodeSettings)
       .pipe(
         // Store user in database
-        switchMap(({ user: { uid, emailVerified, providerData } }) => {
+        switchMap(({ user: { uid, emailVerified } }) => {
           const { password, confirmPassword, ...userData } = registerData;
           return this._firebaseStoreService.setDocumentById<IUser>(
             NAME_FIREBASE_COLLECTION.USERS,
             uid,
             {
               ...userData,
-              id: uid,
               emailVerified,
-              providerData,
+              loginMethod: 'CREDENTIALS'
             }
           );
         }),

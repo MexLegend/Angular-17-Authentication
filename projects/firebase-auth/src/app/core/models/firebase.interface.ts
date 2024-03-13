@@ -15,3 +15,8 @@ export interface IFirebaseErrorCustomData {
 export interface IUpdateDocumentData<T> {
   [key: string]: T;
 }
+
+export interface IGetDocumentQuery<T> {
+  key: string;
+  value: T
+}

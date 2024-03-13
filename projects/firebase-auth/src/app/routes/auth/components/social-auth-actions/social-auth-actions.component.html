@@ -36,34 +36,4 @@
       </button>
     </div>
   </div>
-  <div class="flex gap-4 w-full">
-    <div
-      class="flex flex-1 items-center justify-center"
-      [ngClass]="{ 'cursor-not-allowed': $isLoading() }"
-    >
-      <button
-        type="button"
-        class="flex flex-1 gap-2 items-center justify-center rounded-xl transition-all hover:bg-slate-100 active:scale-95 border border-slate-300 py-3 disabled:pointer-events-none disabled:opacity-70"
-        (click)="authenticateWithProvider('TWITTER')"
-        [disabled]="$isLoading()"
-      >
-        <app-twitter-blue-icon />
-        <p class="text-sm font-medium">Twitter</p>
-      </button>
-    </div>
-    <div
-      class="flex flex-1 items-center justify-center"
-      [ngClass]="{ 'cursor-not-allowed': $isLoading() }"
-    >
-      <button
-        type="button"
-        class="flex flex-1 gap-2 items-center justify-center rounded-xl transition-all hover:bg-slate-100 active:scale-95 border border-slate-300 py-3 disabled:pointer-events-none disabled:opacity-70"
-        (click)="authenticateWithProvider('GITHUB')"
-        [disabled]="$isLoading()"
-      >
-        <app-github-icon />
-        <p class="text-sm font-medium">Github</p>
-      </button>
-    </div>
-  </div>
 </div>
